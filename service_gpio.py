@@ -13,7 +13,7 @@ def init():
     GPIO.setmode(GPIO.BOARD)
     # Set all led in Output
     for bladeId in AttentionLEDTable:
-        GPIO.setup( AttentionLEDTable[ led ], GPIO.OUT )
+        GPIO.setup( AttentionLEDTable[ bladeId ], GPIO.OUT )
 
 def SetBladeAttentionLEDOn( bladeId ):
     GPIO.output( AttentionLEDTable[ bladeId ], True)
