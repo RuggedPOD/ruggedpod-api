@@ -22,12 +22,21 @@ def SetBladeAttentionLEDOn():
     else:
         return 'Set bladeId'
 
+@app.route("/SetAllBladesAttentionLEDOn")
+def SetAllBladesAttentionLEDOn():
+    return service.SetAllBladesAttentionLEDOn()
+
 @app.route("/SetBladeAttentionLEDOff")
 def SetBladeAttentionLEDOff():
     if 'bladeId' in request.args:
         return service.SetBladeAttentionLEDOff( request.args['bladeId'] )
     else:
         return 'Set bladeId'
+
+@app.route("/SetAllBladesAttentionLEDOff")
+def SetAllBladesAttentionLEDOff():
+    return service.SetAllBladesAttentionLEDOff()
+
 
 
 if __name__ == "__main__":

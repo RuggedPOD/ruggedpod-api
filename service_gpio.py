@@ -22,6 +22,16 @@ def SetBladeAttentionLEDOn( bladeId ):
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
+def SetAllBladesAttentionLEDOn():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in ledTable:
+        GPIO.output( ledTable[ bladeId ], True)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
 
 def SetBladeAttentionLEDOff( bladeId ):
     GPIO.output( ledTable[ bladeId ], False)
@@ -32,3 +42,13 @@ def SetBladeAttentionLEDOff( bladeId ):
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
+def SetAllBladesAttentionLEDOff():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in ledTable:
+        GPIO.output( ledTable[ bladeId ], False)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)

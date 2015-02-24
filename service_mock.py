@@ -1,6 +1,13 @@
 
 from lxml import etree
 
+ledTable={'1' : 1,
+          '2' : 2,
+          '3' : 3,
+          '4' : 4
+         }
+
+
 def init():
     print "Mock Ready"
 
@@ -13,6 +20,15 @@ def SetBladeAttentionLEDOn(bladeId):
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
+def SetAllBladesAttentionLEDOn():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in ledTable:
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
 
 def SetBladeAttentionLEDOff(bladeId):
     response = etree.Element('BladeResponse')
@@ -22,4 +38,12 @@ def SetBladeAttentionLEDOff(bladeId):
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-
+def SetAllBladesAttentionLEDOff():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in ledTable:
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
