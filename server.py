@@ -37,6 +37,9 @@ def SetBladeAttentionLEDOff():
 def SetAllBladesAttentionLEDOff():
     return service.SetAllBladesAttentionLEDOff()
 
+@app.route("/GetAllPowerState")
+def GetAllPowerState():
+    return service.GetAllPowerState()
 
 
 if __name__ == "__main__":
