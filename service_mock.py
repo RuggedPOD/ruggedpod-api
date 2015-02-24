@@ -6,12 +6,20 @@ def init():
 
 
 def SetBladeAttentionLEDOn(bladeId):
-    return """
-<BladeResponse
-xmlns=http://schemas.datacontract.org/2004/07/Microsoft.GFS.ACS.Contracts
-xmlns:i=http://www.w3.org/2001/XMLSchema-instance>
-    <CompletionCode>Success</CompletionCode>
-    <statusDescription></statusDescription>
-    <apiVersion>1</apiVersion>
-    <bladeNumber>%s</bladeNumber>
-</BladeResponse>""" %bladeId
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+
+def SetBladeAttentionLEDOff(bladeId):
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+

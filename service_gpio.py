@@ -13,3 +13,12 @@ def init():
     for led in ledTable:
         GPIO.setup(ledTable[ led ], GPIO.OUT)
 
+def SetBladeAttentionLEDOn( bladeId ):
+    GPIO.output( ledTable[ bladeId ], True)
+    return 'OK'
+
+def SetBladeAttentionLEDOff( bladeId ):
+    GPIO.output( ledTable[ bladeId ], False)
+    return 'OK'
+
+

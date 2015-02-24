@@ -12,19 +12,17 @@ else:
 @app.route("/SetBladeAttentionLEDOn")
 def SetBladeAttentionLEDOn():
     if 'bladeId' in request.args:
-        data = service.SetBladeAttentionLEDOn( request.args['bladeId'] )
-        return data
+        return service.SetBladeAttentionLEDOn( request.args['bladeId'] )
     else:
         return 'Set bladeId'
-
 
 @app.route("/SetBladeAttentionLEDOff")
 def SetBladeAttentionLEDOff():
     if 'bladeId' in request.args:
-        service.SetBladeAttentionLEDOff( request.args['bladeId'] )
-        return 'OK'
+        return service.SetBladeAttentionLEDOff( request.args['bladeId'] )
     else:
         return 'Set bladeId'
+
 
 if __name__ == "__main__":
     service.init()
