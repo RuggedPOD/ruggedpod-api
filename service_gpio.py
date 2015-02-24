@@ -2,19 +2,21 @@
 import RPi.GPIO as GPIO
 from lxml import etree
 
-ledTable={'1' : 7,
-          '2' : 12
-         }
+AttentionLEDTable={'1' : 7,
+                   '2' : 12
+                  }
+
+
 
 def init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
     # Set all led in Output
-    for led in ledTable:
-        GPIO.setup(ledTable[ led ], GPIO.OUT)
+    for bladeId in AttentionLEDTable:
+        GPIO.setup( AttentionLEDTable[ led ], GPIO.OUT )
 
 def SetBladeAttentionLEDOn( bladeId ):
-    GPIO.output( ledTable[ bladeId ], True)
+    GPIO.output( AttentionLEDTable[ bladeId ], True)
     response = etree.Element('BladeResponse')
     etree.SubElement(response, 'CompletionCode').text = 'Success'
     etree.SubElement(response, 'statusDescription').text = ''
@@ -24,8 +26,8 @@ def SetBladeAttentionLEDOn( bladeId ):
 
 def SetAllBladesAttentionLEDOn():
     response = etree.Element('AllBladesResponse')
-    for bladeId in ledTable:
-        GPIO.output( ledTable[ bladeId ], True)
+    for bladeId in AttentionLEDTable:
+        GPIO.output( AttentionLEDTable[ bladeId ], True)
         blade = etree.SubElement(response, 'BladeResponse')
         etree.SubElement(blade, 'CompletionCode').text = 'Success'
         etree.SubElement(blade, 'statusDescription').text = ''
@@ -34,7 +36,7 @@ def SetAllBladesAttentionLEDOn():
     return etree.tostring(response, pretty_print=True)
 
 def SetBladeAttentionLEDOff( bladeId ):
-    GPIO.output( ledTable[ bladeId ], False)
+    GPIO.output( AttentionLEDTable[ bladeId ], False)
     response = etree.Element('BladeResponse')
     etree.SubElement(response, 'CompletionCode').text = 'Success'
     etree.SubElement(response, 'statusDescription').text = ''
@@ -44,8 +46,8 @@ def SetBladeAttentionLEDOff( bladeId ):
 
 def SetAllBladesAttentionLEDOff():
     response = etree.Element('AllBladesResponse')
-    for bladeId in ledTable:
-        GPIO.output( ledTable[ bladeId ], False)
+    for bladeId in AttentionLEDTable:
+        GPIO.output( AttentionLEDTable[ bladeId ], False)
         blade = etree.SubElement(response, 'BladeResponse')
         etree.SubElement(blade, 'CompletionCode').text = 'Success'
         etree.SubElement(blade, 'statusDescription').text = ''

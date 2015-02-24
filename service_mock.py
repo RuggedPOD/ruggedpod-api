@@ -1,11 +1,11 @@
 
 from lxml import etree
 
-ledTable={'1' : 1,
-          '2' : 2,
-          '3' : 3,
-          '4' : 4
-         }
+AttentionLEDTable={'1' : 1,
+                   '2' : 2,
+                   '3' : 3,
+                   '4' : 4
+                  }
 
 
 def init():
@@ -22,7 +22,7 @@ def SetBladeAttentionLEDOn(bladeId):
 
 def SetAllBladesAttentionLEDOn():
     response = etree.Element('AllBladesResponse')
-    for bladeId in ledTable:
+    for bladeId in AttentionLEDTable:
         blade = etree.SubElement(response, 'BladeResponse')
         etree.SubElement(blade, 'CompletionCode').text = 'Success'
         etree.SubElement(blade, 'statusDescription').text = ''
@@ -40,7 +40,7 @@ def SetBladeAttentionLEDOff(bladeId):
 
 def SetAllBladesAttentionLEDOff():
     response = etree.Element('AllBladesResponse')
-    for bladeId in ledTable:
+    for bladeId in AttentionLEDTable:
         blade = etree.SubElement(response, 'BladeResponse')
         etree.SubElement(blade, 'CompletionCode').text = 'Success'
         etree.SubElement(blade, 'statusDescription').text = ''
