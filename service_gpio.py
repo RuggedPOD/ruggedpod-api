@@ -2,10 +2,13 @@
 import RPi.GPIO as GPIO
 from lxml import etree
 
-AttentionLEDTable={'1' : 7,
-                   '2' : 12
-                  }
-
+AttentionLEDTable = {'1' : 7,
+                     '2' : 12
+                    }
+PowerTable = { '1' : 11,
+               '2' : 13,
+               '3' : 15
+             }
 
 
 def init():
@@ -14,6 +17,9 @@ def init():
     # Set all led in Output
     for bladeId in AttentionLEDTable:
         GPIO.setup( AttentionLEDTable[ bladeId ], GPIO.OUT )
+    for bladeId in PowerTable:
+        GPIO.setup( PowerTable[ bladeId ], GPIO.OUT )
+
 
 def SetBladeAttentionLEDOn( bladeId ):
     GPIO.output( AttentionLEDTable[ bladeId ], True)
@@ -54,3 +60,21 @@ def SetAllBladesAttentionLEDOff():
         etree.SubElement(blade, 'apiVersion').text = '1'
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
+
+
+def GetAllPowerState():
+    response = etree.Element('GetAllPowerStateResponse')
+    for bladeId in PowerTable:
+        if GPIO.input( PowerTable[bladeId] ):
+            PowerState = 'ON'
+        else:
+            PowerState = 'OFF'
+        power = etree.SubElement(response, 'PowerStateResponse')
+        blade = etree.SubElement(power, 'bladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        etree.SubElement(power, 'powerState').text = PowerState
+    return etree.tostring(response, pretty_print=True)
+
