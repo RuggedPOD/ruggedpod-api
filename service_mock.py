@@ -67,6 +67,7 @@ def GetAllPowerState():
         etree.SubElement(blade, 'CompletionCode').text = 'Success'
         etree.SubElement(blade, 'statusDescription').text = ''
         etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
         etree.SubElement(power, 'powerState').text = PowerState[ bladeId ]
     return etree.tostring(response, pretty_print=True)
 
