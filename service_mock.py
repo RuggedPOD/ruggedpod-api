@@ -7,6 +7,12 @@ AttentionLEDTable={'1' : 1,
                    '4' : 4
                   }
 
+PowerTable={'1' : 5,
+            '2' : 6,
+            '3' : 7,
+            '4' : 8
+           }
+
 
 def init():
     print "Mock Ready"
@@ -47,3 +53,21 @@ def SetAllBladesAttentionLEDOff():
         etree.SubElement(blade, 'apiVersion').text = '1'
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
+
+def GetAllPowerState():
+    PowerState = { '1' : 'ON',
+                   '2' : 'OFF',
+                   '3' : 'OFF',
+                   '4' : 'ON'
+                 }
+    response = etree.Element('GetAllPowerStateResponse')
+    for bladeId in PowerTable:
+        power = etree.SubElement(response, 'PowerStateResponse')
+        blade = etree.SubElement(power, 'bladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(power, 'powerState').text = PowerState[ bladeId ]
+    return etree.tostring(response, pretty_print=True)
+
+
