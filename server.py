@@ -44,7 +44,7 @@ def GetAllPowerState():
 @app.route("/GetPowerState")
 def GetPowerState():
     if 'bladeId' in request.args:
-        return service.GetAllPowerState( request.args['bladeId'] )
+        return service.GetPowerState( request.args['bladeId'] )
     else:
         return 'Set bladeId'
 
