@@ -55,6 +55,13 @@ def SetPowerOn():
     else:
         return 'Set bladeId'
 
+@app.route("/SetPowerOff")
+def SetPowerOff():
+    if 'bladeId' in request.args:
+        return service.SetPowerOff( request.args['bladeId'] )
+    else:
+        return 'Set bladeId'
+
 
 if __name__ == "__main__":
     service.init()

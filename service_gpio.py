@@ -102,3 +102,11 @@ def SetPowerOn(bladeId):
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
+def SetPowerOff(bladeId):
+    GPIO.output( PowerTable[ bladeId ], False)
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
