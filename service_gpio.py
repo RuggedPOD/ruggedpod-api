@@ -6,8 +6,7 @@ AttentionLEDTable = {'1' : 7,
                      '2' : 12
                     }
 PowerTable = { '1' : 7,
-               '2' : 12,
-               '3' : 15
+               '2' : 12
              }
 
 
@@ -110,3 +109,26 @@ def SetPowerOff(bladeId):
     etree.SubElement(response, 'apiVersion').text = '1'
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
+
+def SetAllPowerOn():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in PowerTable:
+        GPIO.output( PowerTable[ bladeId ], True)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+def SetAllPowerOff():
+    response = etree.Element('AllBladesResponse')
+    for bladeId in PowerTable:
+        GPIO.output( PowerTable[ bladeId ], False)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
