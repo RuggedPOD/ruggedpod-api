@@ -78,3 +78,17 @@ def GetAllPowerState():
         etree.SubElement(power, 'powerState').text = PowerState
     return etree.tostring(response, pretty_print=True)
 
+def GetPowerState(bladeId):
+    response = etree.Element('PowerStateResponse')
+    if GPIO.input( PowerTable[bladeId] ):
+        PowerState = 'ON'
+    else:
+        PowerState = 'OFF'
+    blade = etree.SubElement(power, 'bladeResponse')
+    etree.SubElement(blade, 'CompletionCode').text = 'Success'
+    etree.SubElement(blade, 'statusDescription').text = ''
+    etree.SubElement(blade, 'apiVersion').text = '1'
+    etree.SubElement(blade, 'bladeNumber').text = bladeId
+    etree.SubElement(power, 'powerState').text = PowerState
+    return etree.tostring(response, pretty_print=True)
+

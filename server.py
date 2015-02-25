@@ -41,6 +41,15 @@ def SetAllBladesAttentionLEDOff():
 def GetAllPowerState():
     return service.GetAllPowerState()
 
+@app.route("/GetPowerState")
+def GetPowerState():
+    if 'bladeId' in request.args:
+        return service.GetAllPowerState( request.args['bladeId'] )
+    else:
+        return 'Set bladeId'
+
+
+
 
 if __name__ == "__main__":
     service.init()
