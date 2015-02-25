@@ -48,7 +48,12 @@ def GetPowerState():
     else:
         return 'Set bladeId'
 
-
+@app.route("/SetPowerOn")
+def SetPowerOn():
+    if 'bladeId' in request.args:
+        return service.SetPowerOn( request.args['bladeId'] )
+    else:
+        return 'Set bladeId'
 
 
 if __name__ == "__main__":
