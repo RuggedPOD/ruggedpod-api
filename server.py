@@ -4,12 +4,6 @@ from flask import Flask, request
 app = Flask(__name__)
 
 if '-m' in sys.argv:
-    mock = 1
-else:
-    mock = 0
-
-
-if mock == 1:
     import service_mock as service
 else:
     import service_gpio as service
