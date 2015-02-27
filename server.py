@@ -18,7 +18,7 @@ else:
 @app.route("/SetBladeAttentionLEDOn")
 def SetBladeAttentionLEDOn():
     if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOn( request.args['bladeId'] )
+        return service.SetBladeAttentionLEDOn(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
@@ -29,7 +29,7 @@ def SetAllBladesAttentionLEDOn():
 @app.route("/SetBladeAttentionLEDOff")
 def SetBladeAttentionLEDOff():
     if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOff( request.args['bladeId'] )
+        return service.SetBladeAttentionLEDOff(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
@@ -44,21 +44,21 @@ def GetAllPowerState():
 @app.route("/GetPowerState")
 def GetPowerState():
     if 'bladeId' in request.args:
-        return service.GetPowerState( request.args['bladeId'] )
+        return service.GetPowerState(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetPowerOn")
 def SetPowerOn():
     if 'bladeId' in request.args:
-        return service.SetPowerOn( request.args['bladeId'] )
+        return service.SetPowerOn(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetPowerOff")
 def SetPowerOff():
     if 'bladeId' in request.args:
-        return service.SetPowerOff( request.args['bladeId'] )
+        return service.SetPowerOff(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
