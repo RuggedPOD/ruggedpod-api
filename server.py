@@ -70,6 +70,27 @@ def SetAllPowerOn():
 def SetAllPowerOff():
     return service.SetAllPowerOff()
 
+@app.route("/SetBladeShortOnOff")
+def SetBladeShortOnOff():
+    if 'bladeId' in request.args:
+        return service.SetBladeShortOnOff(request.args['bladeId'])
+    else:
+        return 'Set bladeId'
+
+@app.route("/SetAllBladesShortOnOff")
+def SetAllBladesShortOnOff():
+    return service.SetAllBladesShortOnOff()
+
+@app.route("/SetBladeLongOnOff")
+def SetBladeLongOnOff():
+    if 'bladeId' in request.args:
+        return service.SetBladeLongOnOff(request.args['bladeId'])
+    else:
+        return 'Set bladeId'
+
+@app.route("/SetAllBladesLongOnOff")
+def SetAllBladesLongOnOff():
+    return service.SetAllBladesLongOnOff()
 
 
 if __name__ == "__main__":
