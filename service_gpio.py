@@ -1,6 +1,7 @@
 
 import RPi.GPIO as GPIO
 from lxml import etree
+import time
 
 AttentionLEDTable = {'1' : 7,
                      '2' : 12
@@ -9,15 +10,32 @@ PowerTable = { '1' : 7,
                '2' : 12
              }
 
+ResetTable = { '1' : 7,
+               '2' : 12
+             }
+
+OnOffTable = { '1' : 7,
+               '2' : 12
+             }
+ShortPress = 0.5
+LongPress = 6
+
+
 
 def init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
     # Set all led in Output
     for bladeId in AttentionLEDTable:
-        GPIO.setup( AttentionLEDTable[ bladeId ], GPIO.OUT )
+        GPIO.setup(AttentionLEDTable[bladeId], GPIO.OUT)
     for bladeId in PowerTable:
-        GPIO.setup( PowerTable[ bladeId ], GPIO.OUT )
+        GPIO.setup(PowerTable[bladeId], GPIO.OUT)
+    for bladeId in ResetTable:
+        GPIO.setup(ResetTable[bladeId], GPIO.OUT)
+        GPIO.output(ResetTable[bladeId], False)
+    for bladeId in OnOffTable:
+        GPIO.setup(OnOffTable[bladeId], GPIO.OUT)
+        GPIO.output(OnOffTable[bladeId], False)
 
 
 def SetBladeAttentionLEDOn( bladeId ):
@@ -131,4 +149,59 @@ def SetAllPowerOff():
         etree.SubElement(blade, 'apiVersion').text = '1'
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
+
+def SetBladeShortOnOff(bladeId):
+    GPIO.output(OnOffTable[bladeId], True)
+    time.sleep(ShortPress)
+    GPIO.output(OnOffTable[bladeId], False)
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+
+def SetAllBladesShortOnOff():
+    for bladeId in OnOffTable:
+        GPIO.output(OnOffTable[bladeId], True)
+    time.sleep(ShortPress)
+    response = etree.Element('AllBladesResponse')
+    for bladeId in OnOffTable:
+        GPIO.output(OnOffTable[bladeId], False)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+
+def SetBladeLongOnOff(bladeId):
+    GPIO.output(OnOffTable[bladeId], True)
+    time.sleep(LongPress)
+    GPIO.output(OnOffTable[bladeId], False)
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+
+def SetAllBladesLongOnOff():
+    for bladeId in OnOffTable:
+        GPIO.output(OnOffTable[bladeId], True)
+    time.sleep(LongPress)
+    response = etree.Element('AllBladesResponse')
+    for bladeId in OnOffTable:
+        GPIO.output(OnOffTable[bladeId], False)
+        blade = etree.SubElement(response, 'BladeResponse')
+        etree.SubElement(blade, 'CompletionCode').text = 'Success'
+        etree.SubElement(blade, 'statusDescription').text = ''
+        etree.SubElement(blade, 'apiVersion').text = '1'
+        etree.SubElement(blade, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
+
+
 
