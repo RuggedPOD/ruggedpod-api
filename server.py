@@ -92,6 +92,13 @@ def SetBladeLongOnOff():
 def SetAllBladesLongOnOff():
     return service.SetAllBladesLongOnOff()
 
+@app.route("/StartBladeSerialSession")
+def StartBladeSerialSession():
+    if 'bladeId' in request.args:
+        return service.StartBladeSerialSession(request.args['bladeId'])
+    else:
+        return 'Set bladeId'
+
 
 if __name__ == "__main__":
     service.init()

@@ -17,9 +17,12 @@ ResetTable = { '1' : 7,
 OnOffTable = { '1' : 7,
                '2' : 12
              }
-ShortPress = 0.5
+ShortPress = 0.2
 LongPress = 6
 
+SerialSelectTable = { '0' : 7,      # Least significan bit
+                      '1' : 12      # Most significan bit
+                    }
 
 
 def init():
@@ -203,5 +206,12 @@ def SetAllBladesLongOnOff():
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-
+def StartBladeSerialSession(bladeId):
+    for addressBit in SerialSelectTable:
+        status = False
+        if (((int(bladeId) - 1) >> int(addressBit)) & 1):
+            status = True
+        print status
+        GPIO.output(SerialSelectTable[addressBit], status)
+    return "toto"
 
