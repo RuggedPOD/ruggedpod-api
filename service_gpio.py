@@ -1,4 +1,3 @@
-
 import RPi.GPIO as GPIO
 from lxml import etree
 import time
@@ -211,7 +210,11 @@ def StartBladeSerialSession(bladeId):
         status = False
         if (((int(bladeId) - 1) >> int(addressBit)) & 1):
             status = True
-        print status
         GPIO.output(SerialSelectTable[addressBit], status)
-    return "toto"
+    response = etree.Element('BladeResponse')
+    etree.SubElement(response, 'CompletionCode').text = 'Success'
+    etree.SubElement(response, 'statusDescription').text = ''
+    etree.SubElement(response, 'apiVersion').text = '1'
+    etree.SubElement(response, 'bladeNumber').text = bladeId
+    return etree.tostring(response, pretty_print=True)
 
