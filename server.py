@@ -89,6 +89,46 @@ def attribute_missing_handler(error):
     return error.message, error.status_code
 
 
+@app.route("/SetBladeOilPumpOn")
+def SetBladeOilPumpOn():
+    if 'bladeId' in request.args:
+        return service.SetBladeOilPumpOn(request.args['bladeId'])
+    else:
+        return 'Set bladeId'
+
+@app.route("/SetAllBladesOilPumpOn")
+def SetAllBladesOilPumpOn():
+    return service.SetAllBladesOilPumpOn()
+
+
+@app.route("/SetBladeOilPumpOff")
+def SetBladeOilPumpOff():
+    if 'bladeId' in request.args:
+        return service.SetBladeOilPumpOff(request.args['bladeId'])
+    else:
+        return 'Set bladeId'
+
+@app.route("/SetAllBladesOilPumpOff")
+def SetAllBladesOilPumpOff():
+    return service.SetAllBladesOilPumpOff()
+
+
+@app.route("/GetBladeOilPumpStatus")
+def GetBladeOilPumpStatus():
+    if 'bladeId' in request.args:
+        return service.GetBladeOilPumpStatus(request.args['bladeId'])
+    else:
+        return 'Get bladeId'
+
+@app.route("/GetAllBladesOilPumpStatus")
+def GetAllBladesOilPumpStatus():
+    return service.GetAllBladesOilPumpStatus()
+
+
+
+
+
+
 if __name__ == "__main__":
     service.init()
 
