@@ -95,4 +95,6 @@ def StartBladeSerialSession():
 if __name__ == "__main__":
     service.init()
 
+    if '--debug' in sys.argv:
+        app.debug = True
     app.run(host= '0.0.0.0')
