@@ -8,86 +8,86 @@ app = Flask(__name__)
 
 
 @app.route("/SetBladeAttentionLEDOn")
-def SetBladeAttentionLEDOn():
+def set_blade_attention_led_on():
     if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOn(request.args['bladeId'])
+        return service.set_blade_attention_led_on(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetAllBladesAttentionLEDOn")
-def SetAllBladesAttentionLEDOn():
-    return service.SetAllBladesAttentionLEDOn()
+def set_all_blades_attention_led_on():
+    return service.set_all_blades_attention_led_on()
 
 @app.route("/SetBladeAttentionLEDOff")
-def SetBladeAttentionLEDOff():
+def set_blade_attention_led_off():
     if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOff(request.args['bladeId'])
+        return service.set_blade_attention_led_off(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetAllBladesAttentionLEDOff")
-def SetAllBladesAttentionLEDOff():
-    return service.SetAllBladesAttentionLEDOff()
+def set_all_blades_attention_led_off():
+    return service.set_all_blades_attention_led_off()
 
 @app.route("/GetAllPowerState")
-def GetAllPowerState():
-    return service.GetAllPowerState()
+def get_all_power_state():
+    return service.get_all_power_state()
 
 @app.route("/GetPowerState")
-def GetPowerState():
+def get_power_state():
     if 'bladeId' in request.args:
-        return service.GetPowerState(request.args['bladeId'])
+        return service.get_power_state(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetPowerOn")
-def SetPowerOn():
+def set_power_on():
     if 'bladeId' in request.args:
-        return service.SetPowerOn(request.args['bladeId'])
+        return service.set_power_on(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetPowerOff")
-def SetPowerOff():
+def set_power_off():
     if 'bladeId' in request.args:
-        return service.SetPowerOff(request.args['bladeId'])
+        return service.set_power_off(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetAllPowerOn")
-def SetAllPowerOn():
-    return service.SetAllPowerOn()
+def set_all_power_on():
+    return service.set_all_power_on()
 
 @app.route("/SetAllPowerOff")
-def SetAllPowerOff():
-    return service.SetAllPowerOff()
+def set_all_power_off():
+    return service.set_all_power_off()
 
 @app.route("/SetBladeShortOnOff")
-def SetBladeShortOnOff():
+def set_blade_short_onoff():
     if 'bladeId' in request.args:
-        return service.SetBladeShortOnOff(request.args['bladeId'])
+        return service.set_blade_short_onoff(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetAllBladesShortOnOff")
-def SetAllBladesShortOnOff():
-    return service.SetAllBladesShortOnOff()
+def set_all_blades_short_onoff():
+    return service.set_all_blades_short_onoff()
 
 @app.route("/SetBladeLongOnOff")
-def SetBladeLongOnOff():
+def set_blade_long_onoff():
     if 'bladeId' in request.args:
-        return service.SetBladeLongOnOff(request.args['bladeId'])
+        return service.set_blade_long_onoff(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
 @app.route("/SetAllBladesLongOnOff")
-def SetAllBladesLongOnOff():
-    return service.SetAllBladesLongOnOff()
+def set_all_blades_long_onoff():
+    return service.set_all_blades_long_onoff()
 
 @app.route("/StartBladeSerialSession")
-def StartBladeSerialSession():
+def start_blade_serial_session():
     if 'bladeId' in request.args:
-        return service.StartBladeSerialSession(request.args['bladeId'])
+        return service.start_blade_serial_session(request.args['bladeId'])
     else:
         return 'Set bladeId'
 
