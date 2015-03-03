@@ -1,12 +1,10 @@
-
 import sys
 from flask import Flask, request
-app = Flask(__name__)
 
-if '-m' in sys.argv:
-    import service_mock as service
-else:
-    import service_gpio as service
+import service_gpio as service
+
+
+app = Flask(__name__)
 
 
 @app.route("/SetBladeAttentionLEDOn")

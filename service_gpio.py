@@ -1,6 +1,12 @@
-import RPi.GPIO as GPIO
 from lxml import etree
 import time
+import mock
+
+from common import importutils
+
+GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
+                              warn="WARNING: RPi.GPIO could not be imported,"
+                              " you are in MOCK MODE!")
 
 AttentionLEDTable = {'1' : 7,
                      '2' : 12
