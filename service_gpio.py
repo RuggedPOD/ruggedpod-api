@@ -215,50 +215,43 @@ def set_all_blades_oil_pumps_on():
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-def SetBladeOilPumpOff( bladeId ):
-    GPIO.output( OilPumpTable[ bladeId ], False)
+def set_blade_oil_pump_off( bladeId ):
+    GPIO.output(oil_pump_dict[bladeId], False)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
+    _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-def SetAllBladesOilPumpOff():
+def set_all_blades_oil_pump_off():
     response = etree.Element('AllBladesResponse')
-    for bladeId in OilPumpTable:
-        GPIO.output( OilPumpTable[ bladeId ], False)
+    for bladeId in oil_pump_dict:
+        GPIO.output(oil_pump_dict[bladeId], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
 
-def GetAllOilPumpState():
+def get_all_blades_oil_pump_state():
     response = etree.Element('GetAllOilPumpStateResponse')
     for bladeId in PowerTable:
-        if GPIO.input( PowerTable[bladeId] ):
-            OilPumpState = 'ON'
+        if GPIO.input(oil_pump_dict[bladeId]):
+            oil_pump_state = 'ON'
         else:
-            OilPumpState = 'OFF'
+            oil_pump_state = 'OFF'
         power = etree.SubElement(response, 'OilPumpStateResponse')
         blade = etree.SubElement(power, 'bladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
+         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = bladeId
-        etree.SubElement(power, 'powerState').text = OilPumpState
+        etree.SubElement(power, 'powerState').text = oil_pump_state
     return etree.tostring(response, pretty_print=True)
 
-def GetOilPumpState(bladeId):
-    print 'OK'
+def get_blade_oil_pump_state(bladeId):
     response = etree.Element('OilPumpStateResponse')
-    if GPIO.input( PowerTable[bladeId] ):
-        OilPumpState = 'ON'
+    if GPIO.input(oil_pump_dict[bladeId] ):
+        oil_pump_state = 'ON'
     else:
-        OilPumpState = 'OFF'
+        oil_pump_state = 'OFF'
     blade = etree.SubElement(response, 'bladeResponse')
     etree.SubElement(blade, 'CompletionCode').text = 'Success'
     etree.SubElement(blade, 'statusDescription').text = ''

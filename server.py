@@ -102,27 +102,26 @@ def set_all_blades_oil_pumps_on():
 
 
 @app.route("/SetBladeOilPumpOff")
-def SetBladeOilPumpOff():
-    if 'bladeId' in request.args:
-        return service.SetBladeOilPumpOff(request.args['bladeId'])
-    else:
-        return 'Set bladeId'
+def set_blade_oil_pump_off():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_oil_pump_off(request.args['bladeId'])
 
 @app.route("/SetAllBladesOilPumpOff")
-def SetAllBladesOilPumpOff():
-    return service.SetAllBladesOilPumpOff()
+def set_all_blades_oil_pump_off():
+    return service.set_all_blades_oil_pump_off()
 
 
 @app.route("/GetBladeOilPumpStatus")
-def GetBladeOilPumpStatus():
-    if 'bladeId' in request.args:
-        return service.GetBladeOilPumpStatus(request.args['bladeId'])
-    else:
-        return 'Get bladeId'
+def get_blade_oil_pump_state():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.get_blade_oil_pump_state(request.args['bladeId'])
+
 
 @app.route("/GetAllBladesOilPumpStatus")
-def GetAllBladesOilPumpStatus():
-    return service.GetAllBladesOilPumpStatus()
+def get_all_blades_oil_pump_state():
+    return service.get_all_blades_oil_pump_state()
 
 
 
