@@ -1,25 +1,31 @@
-import RPi.GPIO as GPIO
 from lxml import etree
 import time
+import mock
 
-AttentionLEDTable = {'1' : 7,
+from common import importutils
+
+GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
+                              warn="WARNING: RPi.GPIO could not be imported,"
+                              " you are in MOCK MODE!")
+
+attention_led_dict = {'1' : 7,
                      '2' : 12
                     }
-PowerTable = { '1' : 7,
+power_dict = { '1' : 7,
                '2' : 12
              }
 
-ResetTable = { '1' : 7,
+reset_dict = { '1' : 7,
                '2' : 12
              }
 
-OnOffTable = { '1' : 7,
+onoff_dict = { '1' : 7,
                '2' : 12
              }
-ShortPress = 0.2
-LongPress = 6
+short_press = 0.2
+long_press = 6
 
-SerialSelectTable = { '0' : 7,      # Least significan bit
+serial_select_dict = { '0' : 7,      # Least significan bit
                       '1' : 12      # Most significan bit
                     }
 
@@ -28,193 +34,163 @@ def init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
     # Set all led in Output
-    for bladeId in AttentionLEDTable:
-        GPIO.setup(AttentionLEDTable[bladeId], GPIO.OUT)
-    for bladeId in PowerTable:
-        GPIO.setup(PowerTable[bladeId], GPIO.OUT)
-    for bladeId in ResetTable:
-        GPIO.setup(ResetTable[bladeId], GPIO.OUT)
-        GPIO.output(ResetTable[bladeId], False)
-    for bladeId in OnOffTable:
-        GPIO.setup(OnOffTable[bladeId], GPIO.OUT)
-        GPIO.output(OnOffTable[bladeId], False)
+    for blade_id in attention_led_dict:
+        GPIO.setup(attention_led_dict[blade_id], GPIO.OUT)
+    for blade_id in power_dict:
+        GPIO.setup(power_dict[blade_id], GPIO.OUT)
+    for blade_id in reset_dict:
+        GPIO.setup(reset_dict[blade_id], GPIO.OUT)
+        GPIO.output(reset_dict[blade_id], False)
+    for blade_id in onoff_dict:
+        GPIO.setup(onoff_dict[blade_id], GPIO.OUT)
+        GPIO.output(onoff_dict[blade_id], False)
 
-
-def SetBladeAttentionLEDOn( bladeId ):
-    GPIO.output( AttentionLEDTable[ bladeId ], True)
-    response = etree.Element('BladeResponse')
+def _set_default_xml_attr(response):
     etree.SubElement(response, 'CompletionCode').text = 'Success'
     etree.SubElement(response, 'statusDescription').text = ''
     etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
-    return etree.tostring(response, pretty_print=True)
 
-def SetAllBladesAttentionLEDOn():
-    response = etree.Element('AllBladesResponse')
-    for bladeId in AttentionLEDTable:
-        GPIO.output( AttentionLEDTable[ bladeId ], True)
-        blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
-    return etree.tostring(response, pretty_print=True)
-
-def SetBladeAttentionLEDOff( bladeId ):
-    GPIO.output( AttentionLEDTable[ bladeId ], False)
+def set_blade_attention_led_on(blade_id):
+    GPIO.output( attention_led_dict[blade_id], True)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetAllBladesAttentionLEDOff():
+def set_all_blades_attention_led_on():
     response = etree.Element('AllBladesResponse')
-    for bladeId in AttentionLEDTable:
-        GPIO.output( AttentionLEDTable[ bladeId ], False)
+    for blade_id in attention_led_dict:
+        GPIO.output(attention_led_dict[blade_id], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
+def set_blade_attention_led_off(blade_id):
+    GPIO.output( attention_led_dict[blade_id], False)
+    response = etree.Element('BladeResponse')
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
+    return etree.tostring(response, pretty_print=True)
 
-def GetAllPowerState():
+def set_all_blades_attention_led_off():
+    response = etree.Element('AllBladesResponse')
+    for blade_id in attention_led_dict:
+        GPIO.output(attention_led_dict[blade_id], False)
+        blade = etree.SubElement(response, 'BladeResponse')
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
+    return etree.tostring(response, pretty_print=True)
+
+def get_all_power_state():
     response = etree.Element('GetAllPowerStateResponse')
-    for bladeId in PowerTable:
-        if GPIO.input( PowerTable[bladeId] ):
+    for blade_id in power_dict:
+        if GPIO.input(power_dict[blade_id]):
             PowerState = 'ON'
         else:
             PowerState = 'OFF'
         power = etree.SubElement(response, 'PowerStateResponse')
         blade = etree.SubElement(power, 'bladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
         etree.SubElement(power, 'powerState').text = PowerState
     return etree.tostring(response, pretty_print=True)
 
-def GetPowerState(bladeId):
+def get_power_state(blade_id):
     print 'OK'
     response = etree.Element('PowerStateResponse')
-    if GPIO.input( PowerTable[bladeId] ):
+    if GPIO.input(power_dict[blade_id]):
         PowerState = 'ON'
     else:
         PowerState = 'OFF'
     blade = etree.SubElement(response, 'bladeResponse')
-    etree.SubElement(blade, 'CompletionCode').text = 'Success'
-    etree.SubElement(blade, 'statusDescription').text = ''
-    etree.SubElement(blade, 'apiVersion').text = '1'
-    etree.SubElement(blade, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(blade, 'bladeNumber').text = blade_id
     etree.SubElement(response, 'powerState').text = PowerState
     return etree.tostring(response, pretty_print=True)
 
-def SetPowerOn(bladeId):
-    GPIO.output( PowerTable[ bladeId ], True)
+def set_power_on(blade_id):
+    GPIO.output( power_dict[blade_id], True)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetPowerOff(bladeId):
-    GPIO.output( PowerTable[ bladeId ], False)
+def set_power_off(blade_id):
+    GPIO.output(power_dict[blade_id], False)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetAllPowerOn():
+def set_all_power_on():
     response = etree.Element('AllBladesResponse')
-    for bladeId in PowerTable:
-        GPIO.output( PowerTable[ bladeId ], True)
+    for blade_id in power_dict:
+        GPIO.output(power_dict[blade_id], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetAllPowerOff():
+def set_all_power_off():
     response = etree.Element('AllBladesResponse')
-    for bladeId in PowerTable:
-        GPIO.output( PowerTable[ bladeId ], False)
+    for blade_id in power_dict:
+        GPIO.output( power_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetBladeShortOnOff(bladeId):
-    GPIO.output(OnOffTable[bladeId], True)
-    time.sleep(ShortPress)
-    GPIO.output(OnOffTable[bladeId], False)
+def set_blade_short_onoff(blade_id):
+    GPIO.output(onoff_dict[blade_id], True)
+    time.sleep(short_press)
+    GPIO.output(onoff_dict[blade_id], False)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-
-def SetAllBladesShortOnOff():
-    for bladeId in OnOffTable:
-        GPIO.output(OnOffTable[bladeId], True)
-    time.sleep(ShortPress)
+def set_all_blades_short_onoff():
+    for blade_id in onoff_dict:
+        GPIO.output(onoff_dict[blade_id], True)
+    time.sleep(short_press)
     response = etree.Element('AllBladesResponse')
-    for bladeId in OnOffTable:
-        GPIO.output(OnOffTable[bladeId], False)
+    for blade_id in onoff_dict:
+        GPIO.output(onoff_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-
-def SetBladeLongOnOff(bladeId):
-    GPIO.output(OnOffTable[bladeId], True)
-    time.sleep(LongPress)
-    GPIO.output(OnOffTable[bladeId], False)
+def set_blade_long_onoff(blade_id):
+    GPIO.output(onoff_dict[blade_id], True)
+    time.sleep(long_press)
+    GPIO.output(onoff_dict[blade_id], False)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
 
-def SetAllBladesLongOnOff():
-    for bladeId in OnOffTable:
-        GPIO.output(OnOffTable[bladeId], True)
-    time.sleep(LongPress)
+def set_all_blades_long_onoff():
+    for blade_id in onoff_dict:
+        GPIO.output(onoff_dict[blade_id], True)
+    time.sleep(long_press)
     response = etree.Element('AllBladesResponse')
-    for bladeId in OnOffTable:
-        GPIO.output(OnOffTable[bladeId], False)
+    for blade_id in onoff_dict:
+        GPIO.output(onoff_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
-        etree.SubElement(blade, 'bladeNumber').text = bladeId
+        _set_default_xml_attr(response)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def StartBladeSerialSession(bladeId):
-    for addressBit in SerialSelectTable:
+def start_blade_serial_session(blade_id):
+    for address_bit in serial_select_dict:
         status = False
-        if (((int(bladeId) - 1) >> int(addressBit)) & 1):
+        if (((int(blade_id) - 1) >> int(address_bit)) & 1):
             status = True
-        GPIO.output(SerialSelectTable[addressBit], status)
+        GPIO.output(serial_select_dict[address_bit], status)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
-    etree.SubElement(response, 'bladeNumber').text = bladeId
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
-

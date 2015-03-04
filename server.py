@@ -1,106 +1,97 @@
-
 import sys
 from flask import Flask, request
+
+from common import exception
+import service_gpio as service
+
+
 app = Flask(__name__)
-
-if '-m' in sys.argv:
-    mock = 1
-else:
-    mock = 0
-
-
-if mock == 1:
-    import service_mock as service
-else:
-    import service_gpio as service
 
 
 @app.route("/SetBladeAttentionLEDOn")
-def SetBladeAttentionLEDOn():
-    if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOn( request.args['bladeId'] )
-    else:
-        return 'Set bladeId'
+def set_blade_attention_led_on():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_attention_led_on(request.args['bladeId'])
 
 @app.route("/SetAllBladesAttentionLEDOn")
-def SetAllBladesAttentionLEDOn():
-    return service.SetAllBladesAttentionLEDOn()
+def set_all_blades_attention_led_on():
+    return service.set_all_blades_attention_led_on()
 
 @app.route("/SetBladeAttentionLEDOff")
-def SetBladeAttentionLEDOff():
-    if 'bladeId' in request.args:
-        return service.SetBladeAttentionLEDOff( request.args['bladeId'] )
-    else:
-        return 'Set bladeId'
+def set_blade_attention_led_off():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_attention_led_off(request.args['bladeId'])
 
 @app.route("/SetAllBladesAttentionLEDOff")
-def SetAllBladesAttentionLEDOff():
-    return service.SetAllBladesAttentionLEDOff()
+def set_all_blades_attention_led_off():
+    return service.set_all_blades_attention_led_off()
 
 @app.route("/GetAllPowerState")
-def GetAllPowerState():
-    return service.GetAllPowerState()
+def get_all_power_state():
+    return service.get_all_power_state()
 
 @app.route("/GetPowerState")
-def GetPowerState():
-    if 'bladeId' in request.args:
-        return service.GetPowerState( request.args['bladeId'] )
-    else:
-        return 'Set bladeId'
+def get_power_state():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.get_power_state(request.args['bladeId'])
 
 @app.route("/SetPowerOn")
-def SetPowerOn():
-    if 'bladeId' in request.args:
-        return service.SetPowerOn( request.args['bladeId'] )
-    else:
-        return 'Set bladeId'
+def set_power_on():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_power_on(request.args['bladeId'])
 
 @app.route("/SetPowerOff")
-def SetPowerOff():
-    if 'bladeId' in request.args:
-        return service.SetPowerOff( request.args['bladeId'] )
-    else:
-        return 'Set bladeId'
+def set_power_off():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_power_off(request.args['bladeId'])
 
 @app.route("/SetAllPowerOn")
-def SetAllPowerOn():
-    return service.SetAllPowerOn()
+def set_all_power_on():
+    return service.set_all_power_on()
 
 @app.route("/SetAllPowerOff")
-def SetAllPowerOff():
-    return service.SetAllPowerOff()
+def set_all_power_off():
+    return service.set_all_power_off()
 
 @app.route("/SetBladeShortOnOff")
-def SetBladeShortOnOff():
-    if 'bladeId' in request.args:
-        return service.SetBladeShortOnOff(request.args['bladeId'])
-    else:
-        return 'Set bladeId'
+def set_blade_short_onoff():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_short_onoff(request.args['bladeId'])
 
 @app.route("/SetAllBladesShortOnOff")
-def SetAllBladesShortOnOff():
-    return service.SetAllBladesShortOnOff()
+def set_all_blades_short_onoff():
+    return service.set_all_blades_short_onoff()
 
 @app.route("/SetBladeLongOnOff")
-def SetBladeLongOnOff():
-    if 'bladeId' in request.args:
-        return service.SetBladeLongOnOff(request.args['bladeId'])
-    else:
-        return 'Set bladeId'
+def set_blade_long_onoff():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_long_onoff(request.args['bladeId'])
 
 @app.route("/SetAllBladesLongOnOff")
-def SetAllBladesLongOnOff():
-    return service.SetAllBladesLongOnOff()
+def set_all_blades_long_onoff():
+    return service.set_all_blades_long_onoff()
 
 @app.route("/StartBladeSerialSession")
-def StartBladeSerialSession():
-    if 'bladeId' in request.args:
-        return service.StartBladeSerialSession(request.args['bladeId'])
-    else:
-        return 'Set bladeId'
+def start_blade_serial_session():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.start_blade_serial_session(request.args['bladeId'])
+
+@app.errorhandler(exception.ParameterMissing)
+def attribute_missing_handler(error):
+    return error.message, error.status_code
 
 
 if __name__ == "__main__":
     service.init()
 
+    if '--debug' in sys.argv:
+        app.debug = True
     app.run(host= '0.0.0.0')
