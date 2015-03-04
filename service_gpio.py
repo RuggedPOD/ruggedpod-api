@@ -27,11 +27,11 @@ long_press = 6
 
 serial_select_dict = { '0' : 7,      # Least significan bit
                       '1' : 12      # Most significan bit
-                    }
+                     }
 
-OilPumpTable = { '1' : 7,
+oil_pump_dict = { '1' : 7,
                  '2' : 12
-               }
+                }
 
 
 def init():
@@ -199,23 +199,19 @@ def start_blade_serial_session(blade_id):
     etree.SubElement(response, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
-def SetBladeOilPumpOn( bladeId ):
-    GPIO.output( OilPumpTable[ bladeId ], True)
+def set_blade_oil_pump_on(bladeId):
+    GPIO.output( oil_pump_dict[bladeId], True)
     response = etree.Element('BladeResponse')
-    etree.SubElement(response, 'CompletionCode').text = 'Success'
-    etree.SubElement(response, 'statusDescription').text = ''
-    etree.SubElement(response, 'apiVersion').text = '1'
+    _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-def SetAllBladesOilPumpOn():
+def set_all_blades_oil_pumps_on():
     response = etree.Element('AllBladesResponse')
-    for bladeId in OilPumpTable:
-        GPIO.output( OilPumpTable[ bladeId ], True)
+    for bladeId in oil_pump_dict:
+        GPIO.output(oil_pump_dict[bladeId], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        etree.SubElement(blade, 'CompletionCode').text = 'Success'
-        etree.SubElement(blade, 'statusDescription').text = ''
-        etree.SubElement(blade, 'apiVersion').text = '1'
+        _set_default_xml_attr(response)
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 

@@ -90,15 +90,15 @@ def attribute_missing_handler(error):
 
 
 @app.route("/SetBladeOilPumpOn")
-def SetBladeOilPumpOn():
-    if 'bladeId' in request.args:
-        return service.SetBladeOilPumpOn(request.args['bladeId'])
-    else:
-        return 'Set bladeId'
+def set_blade_oil_pump_on():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_oil_pump_on(request.args['bladeId'])
+
 
 @app.route("/SetAllBladesOilPumpOn")
-def SetAllBladesOilPumpOn():
-    return service.SetAllBladesOilPumpOn()
+def set_all_blades_oil_pumps_on():
+    return service.set_all_blades_oil_pumps_on()
 
 
 @app.route("/SetBladeOilPumpOff")
