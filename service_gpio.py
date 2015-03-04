@@ -66,7 +66,7 @@ def set_all_blades_attention_led_on():
     for blade_id in attention_led_dict:
         GPIO.output(attention_led_dict[blade_id], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -82,7 +82,7 @@ def set_all_blades_attention_led_off():
     for blade_id in attention_led_dict:
         GPIO.output(attention_led_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -95,7 +95,7 @@ def get_all_power_state():
             PowerState = 'OFF'
         power = etree.SubElement(response, 'PowerStateResponse')
         blade = etree.SubElement(power, 'bladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
         etree.SubElement(power, 'powerState').text = PowerState
     return etree.tostring(response, pretty_print=True)
@@ -108,7 +108,7 @@ def get_power_state(blade_id):
     else:
         PowerState = 'OFF'
     blade = etree.SubElement(response, 'bladeResponse')
-    _set_default_xml_attr(response)
+    _set_default_xml_attr(blade)
     etree.SubElement(blade, 'bladeNumber').text = blade_id
     etree.SubElement(response, 'powerState').text = PowerState
     return etree.tostring(response, pretty_print=True)
@@ -132,7 +132,7 @@ def set_all_power_on():
     for blade_id in power_dict:
         GPIO.output(power_dict[blade_id], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -141,7 +141,7 @@ def set_all_power_off():
     for blade_id in power_dict:
         GPIO.output( power_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -162,7 +162,7 @@ def set_all_blades_short_onoff():
     for blade_id in onoff_dict:
         GPIO.output(onoff_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -184,7 +184,7 @@ def set_all_blades_long_onoff():
     for blade_id in onoff_dict:
         GPIO.output(onoff_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
 
@@ -211,7 +211,7 @@ def set_all_blades_oil_pumps_on():
     for bladeId in oil_pump_dict:
         GPIO.output(oil_pump_dict[bladeId], True)
         blade = etree.SubElement(response, 'BladeResponse')
-        _set_default_xml_attr(response)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
