@@ -44,7 +44,7 @@ def init():
         GPIO.setup(power_dict[blade_id], GPIO.OUT)
     for blade_id in reset_dict:
         GPIO.setup(reset_dict[blade_id], GPIO.OUT)
-        GPIO.output(reset_dict[blade_id], False)
+        GPIO.output(reset_dict[blade_id], True)
     for blade_id in onoff_dict:
         GPIO.setup(onoff_dict[blade_id], GPIO.OUT)
         GPIO.output(onoff_dict[blade_id], False)
@@ -187,6 +187,29 @@ def set_all_blades_long_onoff():
         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
     return etree.tostring(response, pretty_print=True)
+
+def set_blade_reset(blade_id):
+    GPIO.output(reset_dict[blade_id], False)
+    time.sleep(short_press)
+    GPIO.output(reset_dict[blade_id], True)
+    response = etree.Element('BladeResponse')
+    _set_default_xml_attr(response)
+    etree.SubElement(response, 'bladeNumber').text = blade_id
+    return etree.tostring(response, pretty_print=True)
+
+def set_all_blades_reset():
+    for blade_id in reset_dict:
+        GPIO.output(reset_dict[blade_id], False)
+    time.sleep(short_press)
+    response = etree.Element('AllBladesResponse')
+    for blade_id in onoff_dict:
+        GPIO.output(onoff_dict[blade_id], True)
+        blade = etree.SubElement(response, 'BladeResponse')
+        _set_default_xml_attr(blade)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
+    return etree.tostring(response, pretty_print=True)
+
+
 
 def start_blade_serial_session(blade_id):
     for address_bit in serial_select_dict:

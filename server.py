@@ -78,6 +78,16 @@ def set_blade_long_onoff():
 def set_all_blades_long_onoff():
     return service.set_all_blades_long_onoff()
 
+@app.route("/SetBladeReset")
+def set_blade_reset():
+    if not 'bladeId' in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.set_blade_reset(request.args['bladeId'])
+
+@app.route("/SetAllBladesReset")
+def set_all_blades_reset():
+    return service.set_all_blades_reset()
+
 @app.route("/StartBladeSerialSession")
 def start_blade_serial_session():
     if not 'bladeId' in request.args:
