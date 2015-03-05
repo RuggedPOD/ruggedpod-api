@@ -41,3 +41,7 @@ class BadRequest(RuggedpodException):
 
 class ParameterMissing(BadRequest):
     msg_fmt = "The request is malformed. Reason: the parameter %(name)s is missing."
+
+
+class ConfAttributeMissing(RuggedpodException):
+    msg_fmt = "The attribute %(name)s is missing in configuration file"
