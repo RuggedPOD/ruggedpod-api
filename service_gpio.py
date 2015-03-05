@@ -48,6 +48,9 @@ def init():
     for blade_id in onoff_dict:
         GPIO.setup(onoff_dict[blade_id], GPIO.OUT)
         GPIO.output(onoff_dict[blade_id], False)
+    for blade_id in serial_select_dict:
+        GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
+        GPIO.output(serial_select_dict[blade_id], False)
 
 def _set_default_xml_attr(response):
     etree.SubElement(response, 'CompletionCode').text = 'Success'
