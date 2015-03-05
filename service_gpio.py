@@ -15,18 +15,18 @@ power_dict = { '1' : 7,
                '2' : 12
              }
 
-reset_dict = { '1' : 7,
-               '2' : 12
+reset_dict = { '1' : 23,
+               '2' : 21
              }
 
-onoff_dict = { '1' : 7,
+onoff_dict = { '1' : 26,
                '2' : 12
              }
-short_press = 0.2
+short_press = 1
 long_press = 6
 
-serial_select_dict = { '0' : 7,      # Least significan bit
-                      '1' : 12      # Most significan bit
+serial_select_dict = { '0' : 24,      # Least significan bit
+                       '1' : 12      # Most significan bit
                      }
 
 oil_pump_dict = { '1' : 7,
