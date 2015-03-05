@@ -267,7 +267,7 @@ def get_all_blades_oil_pump_state():
             oil_pump_state = 'OFF'
         power = etree.SubElement(response, 'OilPumpStateResponse')
         blade = etree.SubElement(power, 'bladeResponse')
-         _set_default_xml_attr(blade)
+        _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = bladeId
         etree.SubElement(power, 'powerState').text = oil_pump_state
     return etree.tostring(response, pretty_print=True)
