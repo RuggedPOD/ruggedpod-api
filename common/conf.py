@@ -13,7 +13,6 @@ class YmlConf(object):
     def __init__(self, filepath):
         with open(filepath, 'r') as ymlfile:
             self.cfg_dict = yamlutils.load(ymlfile)
-            print self.cfg_dict
 
     def get_attr(self, attr_name):
         try:

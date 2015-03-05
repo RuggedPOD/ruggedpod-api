@@ -2,37 +2,23 @@ from lxml import etree
 import time
 import mock
 
+from common import conf
 from common import importutils
 
 GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
                               warn="WARNING: RPi.GPIO could not be imported,"
                               " you are in MOCK MODE!")
 
-attention_led_dict = {'1' : 7,
-                     '2' : 12
-                    }
-power_dict = { '1' : 7,
-               '2' : 12
-             }
+ymlConf = conf.YmlConf('conf.yaml')
 
-reset_dict = { '1' : 23,
-               '2' : 21
-             }
-
-onoff_dict = { '1' : 26,
-               '2' : 12
-             }
-short_press = 1
-long_press = 6
-
-serial_select_dict = { '0' : 24,      # Least significan bit
-                       '1' : 12      # Most significan bit
-                     }
-
-oil_pump_dict = { '1' : 7,
-                 '2' : 12
-                }
-
+attention_led_dict = ymlConf.get_attr('attention_led')
+power_dict = ymlConf.get_attr('power')
+reset_dict = ymlConf.get_attr('reset')
+onoff_dict = ymlConf.get_attr('onoff')
+short_press = ymlConf.get_attr('short_press')
+long_press = ymlConf.get_attr('long_press')
+serial_select_dict = ymlConf.get_attr('serial_select')
+oil_pump_dict = ymlConf.get_attr('oil_pump')
 
 def init():
     GPIO.setwarnings(False)
