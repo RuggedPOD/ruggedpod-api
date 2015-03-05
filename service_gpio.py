@@ -44,7 +44,7 @@ def _set_default_xml_attr(response):
     etree.SubElement(response, 'apiVersion').text = '1'
 
 def set_blade_attention_led_on(blade_id):
-    GPIO.output( attention_led_dict[blade_id], True)
+    GPIO.output(attention_led_dict[blade_id], True)
     response = etree.Element('BladeResponse')
     _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = blade_id
@@ -60,7 +60,7 @@ def set_all_blades_attention_led_on():
     return etree.tostring(response, pretty_print=True)
 
 def set_blade_attention_led_off(blade_id):
-    GPIO.output( attention_led_dict[blade_id], False)
+    GPIO.output(attention_led_dict[blade_id], False)
     response = etree.Element('BladeResponse')
     _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = blade_id
@@ -103,7 +103,7 @@ def get_power_state(blade_id):
     return etree.tostring(response, pretty_print=True)
 
 def set_power_on(blade_id):
-    GPIO.output( power_dict[blade_id], True)
+    GPIO.output(power_dict[blade_id], True)
     response = etree.Element('BladeResponse')
     _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = blade_id
@@ -128,7 +128,7 @@ def set_all_power_on():
 def set_all_power_off():
     response = etree.Element('AllBladesResponse')
     for blade_id in power_dict:
-        GPIO.output( power_dict[blade_id], False)
+        GPIO.output(power_dict[blade_id], False)
         blade = etree.SubElement(response, 'BladeResponse')
         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
@@ -212,7 +212,7 @@ def start_blade_serial_session(blade_id):
     return etree.tostring(response, pretty_print=True)
 
 def set_blade_oil_pump_on(bladeId):
-    GPIO.output( oil_pump_dict[bladeId], True)
+    GPIO.output(oil_pump_dict[bladeId], True)
     response = etree.Element('BladeResponse')
     _set_default_xml_attr(response)
     etree.SubElement(response, 'bladeNumber').text = bladeId
@@ -227,7 +227,7 @@ def set_all_blades_oil_pumps_on():
         etree.SubElement(blade, 'bladeNumber').text = bladeId
     return etree.tostring(response, pretty_print=True)
 
-def set_blade_oil_pump_off( bladeId ):
+def set_blade_oil_pump_off(bladeId):
     GPIO.output(oil_pump_dict[bladeId], False)
     response = etree.Element('BladeResponse')
     _set_default_xml_attr(response)
@@ -260,7 +260,7 @@ def get_all_blades_oil_pump_state():
 
 def get_blade_oil_pump_state(bladeId):
     response = etree.Element('OilPumpStateResponse')
-    if GPIO.input(oil_pump_dict[bladeId] ):
+    if GPIO.input(oil_pump_dict[bladeId]):
         oil_pump_state = 'ON'
     else:
         oil_pump_state = 'OFF'
