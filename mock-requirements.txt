@@ -1,2 +1,4 @@
 Flask==0.10.1
 lxml==3.4.2
+mock==1.0.1
+PyYAML==3.11
