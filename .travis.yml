@@ -6,3 +6,5 @@ install:
 
 script:
   - py.test --pep8 ruggedpod-api
+
+sudo: false
