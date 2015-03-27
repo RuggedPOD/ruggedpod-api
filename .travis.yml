@@ -1,0 +1,10 @@
+language: python
+
+install: 
+  - pip install pytest-pep8
+  - pip install -r mock-requirements.txt
+
+script:
+  - py.test --pep8 ruggedpod-api
+
+sudo: false
