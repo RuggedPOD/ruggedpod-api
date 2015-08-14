@@ -24,6 +24,9 @@ serial_select:
 
 oil_pump:
     '1': 12
+    '2': 12
+    '3': 12
+    '4': 12
 
 short_press: 1
 long_press: 6

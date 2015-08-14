@@ -38,6 +38,9 @@ def init():
     for blade_id in serial_select_dict:
         GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
         GPIO.output(serial_select_dict[blade_id], False)
+    for blade_id in oil_pump_dict:
+        GPIO.setup(oil_pump_dict[blade_id], GPIO.OUT)
+        GPIO.output(oil_pump_dict[blade_id], False)
 
 
 def _set_default_xml_attr(response):
