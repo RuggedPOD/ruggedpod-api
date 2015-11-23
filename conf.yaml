@@ -35,3 +35,10 @@ oil_pump:
 
 short_press: 1
 long_press: 6
+
+authentication:
+    enabled: false
+    token_lifetime: 3600
+    users:
+        admin: admin
+        ruggedpod: password

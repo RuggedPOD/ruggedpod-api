@@ -1,11 +1,53 @@
 import sys
-from flask import Flask, request
+import datetime
+
+from flask import Flask, request, make_response
 
 from common import exception
+from common.conf import YmlConf
 import service_gpio as service
+import service_auth as auth
 
+
+auth_enabled = YmlConf("conf.yaml").get_attr('authentication')['enabled']
 
 app = Flask(__name__)
+
+
+@app.errorhandler(auth.AuthenticationFailed)
+def handle_invalid_usage(error):
+    return '', error.status_code
+
+
+@app.before_request
+def check_authentication():
+    if not auth_enabled:
+        return
+    if request.path == '/token' and request.method == 'POST':
+        return
+    token_key = 'X-Auth-Token'
+    if token_key in request.cookies:
+        token = request.cookies[token_key]
+    else:
+        if token_key in request.headers:
+            token = request.headers[token_key]
+        else:
+            raise auth.AuthenticationFailed()
+    auth.check(token)
+
+
+@app.route("/token", methods=['POST'])
+def authenticate():
+    if 'username' not in request.args:
+        raise exception.ParameterMissing(name="username")
+    if 'password' not in request.args:
+        raise exception.ParameterMissing(name="password")
+
+    token, expires = auth.get_token(request.args['username'],
+                                    request.args['password'])
+    response = make_response('', 201)
+    response.set_cookie('X-Auth-Token', token, expires=expires)
+    return response
 
 
 @app.route("/SetBladeAttentionLEDOn")

@@ -2,6 +2,7 @@
 
 import six
 
+
 class RuggedpodException(Exception):
     message = "An unknown exception occured"
     status_code = 500
