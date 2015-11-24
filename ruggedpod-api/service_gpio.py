@@ -13,6 +13,7 @@ ymlConf = conf.YmlConf('conf.yaml')
 
 attention_led_dict = ymlConf.get_attr('attention_led')
 power_dict = ymlConf.get_attr('power')
+consumption_dict = ymlConf.get_attr('consumption')
 reset_dict = ymlConf.get_attr('reset')
 onoff_dict = ymlConf.get_attr('onoff')
 short_press = ymlConf.get_attr('short_press')
@@ -38,6 +39,8 @@ def init():
     for blade_id in serial_select_dict:
         GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
         GPIO.output(serial_select_dict[blade_id], False)
+    # Set i2c
+    # command....
 
 
 def _set_default_xml_attr(response):
@@ -79,6 +82,31 @@ def set_all_blades_attention_led_off():
         blade = etree.SubElement(response, 'BladeResponse')
         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
+    return etree.tostring(response, pretty_print=True)
+
+
+def get_all_power_consumption():
+    import random
+    random.seed()
+    response = etree.Element('GetAllPowerConsumptionResponse')
+    for blade_id in consumption_dict:
+        consumption = etree.SubElement(response, 'PowerConsumptionResponse')
+        blade = etree.SubElement(consumption, 'bladeResponse')
+        _set_default_xml_attr(blade)
+        etree.SubElement(blade, 'bladeNumber').text = blade_id
+        rand = str(50 + int(time.time()) % 30 + random.randint(-10, 10))
+        etree.SubElement(consumption, 'powerConsumption').text = rand
+    return etree.tostring(response, pretty_print=True)
+
+
+def get_power_consumption(blade_id):
+    import random
+    response = etree.Element('PowerConsumptionResponse')
+    blade = etree.SubElement(response, 'bladeResponse')
+    _set_default_xml_attr(blade)
+    etree.SubElement(blade, 'bladeNumber').text = blade_id
+    rand = str(100 + random.randint(-10, 10))
+    etree.SubElement(response, 'powerConsumption').text = rand
     return etree.tostring(response, pretty_print=True)
 
 

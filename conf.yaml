@@ -5,6 +5,14 @@ attention_led:
 power:
     '1': 7
     '2': 12
+    '3': 12
+    '4': 12
+
+consumption:
+    '1': toto
+    '2': toto
+    '3': toto
+    '4': toto
 
 reset:
     '1': 23

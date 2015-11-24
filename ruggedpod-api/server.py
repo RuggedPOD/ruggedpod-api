@@ -32,6 +32,18 @@ def set_all_blades_attention_led_off():
     return service.set_all_blades_attention_led_off()
 
 
+@app.route("/GetAllPowerConsumption")
+def get_all_power_consumption():
+    return service.get_all_power_consumption()
+
+
+@app.route("/GetPowerConsumption")
+def get_power_consumption():
+    if 'bladeId' not in request.args:
+        raise exception.ParameterMissing(name="bladeId")
+    return service.get_power_consumption(request.args['bladeId'])
+
+
 @app.route("/GetAllPowerState")
 def get_all_power_state():
     return service.get_all_power_state()
