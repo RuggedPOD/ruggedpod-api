@@ -1,5 +1,7 @@
 """ruggedpod-api base exception handling."""
 
+import six
+
 
 class RuggedpodException(Exception):
     message = "An unknown exception occured"
