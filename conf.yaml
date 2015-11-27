@@ -37,7 +37,7 @@ short_press: 1
 long_press: 6
 
 authentication:
-    enabled: false
+    enabled: true
     token_lifetime: 3600
     users:
         admin: admin
