@@ -9,10 +9,14 @@ power:
     '4': 12
 
 consumption:
-    '1': toto
-    '2': toto
-    '3': toto
-    '4': toto
+    '1': 1
+    '2': 2
+    '3': 3
+    '4': 4
+
+dac_power_consumption_addr : 0x6c
+dac_other_addr : 0x6a
+
 
 reset:
     '1': 23
