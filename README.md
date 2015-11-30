@@ -10,3 +10,7 @@ Installation : pip install -r requirements.txt
 Usage : python ruggedpod-api/server.py [-m]
  -m : run server as mock (usable for development without raspberry and GPIO lib)
 ```
+
+## License
+
+See the LICENSE file for license rights and limitations (GPL v3).
