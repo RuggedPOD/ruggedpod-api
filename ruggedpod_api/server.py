@@ -21,10 +21,10 @@ import datetime
 
 from flask import Flask, request, make_response
 
-from common import exception
-from common.conf import YmlConf
-import service_gpio as service
-import service_auth as auth
+from ruggedpod_api.common import exception
+from ruggedpod_api.common.conf import YmlConf
+import ruggedpod_api.service_gpio as service
+import ruggedpod_api.service_auth as auth
 
 
 auth_enabled = YmlConf("conf.yaml").get_attr('authentication')['enabled']

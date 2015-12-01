@@ -20,8 +20,8 @@ Class to read the configuration file in YAML
 """
 
 
-from common import exception
-from common import yamlutils
+from ruggedpod_api.common import exception
+from ruggedpod_api.common import yamlutils
 
 
 class YmlConf(object):

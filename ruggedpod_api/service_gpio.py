@@ -20,8 +20,9 @@ from lxml import etree
 import time
 import mock
 
-from common import conf
-from common import importutils
+from ruggedpod_api.common import conf
+from ruggedpod_api.common import importutils
+
 
 GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
                               warn="WARNING: RPi.GPIO could not be imported,"

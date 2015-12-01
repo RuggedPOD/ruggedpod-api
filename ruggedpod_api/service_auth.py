@@ -19,10 +19,10 @@ import os
 import json
 import time
 
-from common import exception
-from common.conf import YmlConf
 from cryptography.fernet import Fernet
 
+from ruggedpod_api.common import exception
+from ruggedpod_api.common.conf import YmlConf
 
 auth = YmlConf("conf.yaml").get_attr('authentication')
 users = auth['users']
