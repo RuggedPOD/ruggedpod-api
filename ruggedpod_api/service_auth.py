@@ -24,10 +24,11 @@ import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
 
+from ruggedpod_api import config
 from ruggedpod_api.common import exception
-from ruggedpod_api.common.conf import YmlConf
 
-auth = YmlConf("conf.yaml").get_attr('authentication')
+
+auth = config.get_attr('authentication')
 users = auth['users']
 
 
