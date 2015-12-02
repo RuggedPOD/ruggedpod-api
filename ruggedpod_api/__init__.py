@@ -15,6 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import os.path
+
 from ruggedpod_api.common.conf import YmlConf
 
-config=YmlConf("conf.yaml")
+CONF_FILE = "/etc/ruggedpod/api-conf.yaml"
+
+if not os.path.isfile(CONF_FILE):
+    # Get configuration file from project directory
+    # This is mainly useful in development mode
+    CONF_FILE = "%s/../conf.yaml" % os.path.dirname(os.path.realpath(__file__))
+
+config = YmlConf(CONF_FILE)
