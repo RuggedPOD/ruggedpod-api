@@ -18,8 +18,11 @@
 import os
 import json
 import time
+import base64
+import hashlib
 
-from cryptography.fernet import Fernet
+from Crypto import Random
+from Crypto.Cipher import AES
 
 from ruggedpod_api.common import exception
 from ruggedpod_api.common.conf import YmlConf
@@ -47,17 +50,30 @@ class Cypher(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.key = Fernet.generate_key()
-        self.cipher_suite = Fernet(self.key)
+        self.key = hashlib.sha256(auth['secret_key'].encode()).digest()
 
-    def encrypt(self, text):
-        return self.cipher_suite.encrypt(b"%s" % text)
+    def encrypt(self, raw):
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(self._pad(raw)))
 
-    def decrypt(self, cipher):
+    def decrypt(self, enc):
         try:
-            return self.cipher_suite.decrypt(cipher.encode("ascii"))
+            dec = base64.b64decode(enc)
+            iv = dec[:AES.block_size]
+            cipher = AES.new(self.key, AES.MODE_CBC, iv)
+            return self._unpad(cipher.decrypt(dec[AES.block_size:])).decode('utf-8')
         except:
             raise AuthenticationFailed()
+
+    @staticmethod
+    def _pad(s):
+        length = 16 - len(s) % 16
+        return s + length * chr(length)
+
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
 
 
 def get_token(username, password):

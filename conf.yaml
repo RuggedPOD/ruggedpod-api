@@ -38,6 +38,7 @@ long_press: 6
 
 authentication:
     enabled: true
+    secret_key: RASlAp4ILZi3rpqIMPCxrBoitx5QW4if5+naB8s2y30=
     token_lifetime: 3600
     users:
         admin: admin
