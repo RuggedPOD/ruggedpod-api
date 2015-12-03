@@ -20,24 +20,23 @@ from lxml import etree
 import time
 import mock
 
-from common import conf
-from common import importutils
+from ruggedpod_api import config
+from ruggedpod_api.common import importutils
+
 
 GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
                               warn="WARNING: RPi.GPIO could not be imported,"
                               " you are in MOCK MODE!")
 
-ymlConf = conf.YmlConf('conf.yaml')
-
-attention_led_dict = ymlConf.get_attr('attention_led')
-power_dict = ymlConf.get_attr('power')
-consumption_dict = ymlConf.get_attr('consumption')
-reset_dict = ymlConf.get_attr('reset')
-onoff_dict = ymlConf.get_attr('onoff')
-short_press = ymlConf.get_attr('short_press')
-long_press = ymlConf.get_attr('long_press')
-serial_select_dict = ymlConf.get_attr('serial_select')
-oil_pump_dict = ymlConf.get_attr('oil_pump')
+attention_led_dict = config.get_attr('attention_led')
+power_dict = config.get_attr('power')
+consumption_dict = config.get_attr('consumption')
+reset_dict = config.get_attr('reset')
+onoff_dict = config.get_attr('onoff')
+short_press = config.get_attr('short_press')
+long_press = config.get_attr('long_press')
+serial_select_dict = config.get_attr('serial_select')
+oil_pump_dict = config.get_attr('oil_pump')
 
 
 def init():

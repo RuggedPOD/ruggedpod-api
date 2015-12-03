@@ -3,5 +3,5 @@ lxml==3.4.2
 mock==1.0.1
 PyYAML==3.11
 six==1.10.0
-cryptography==1.0.2
+pycrypto==2.6.1
 rpi.gpio==0.5.11
