@@ -17,12 +17,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import datetime
+import base64
 
 from flask import Flask, request, make_response
+from OpenSSL import SSL as ssl
+from OpenSSL import crypto as ssl_crypto
 
 from ruggedpod_api import config
 from ruggedpod_api.common import exception
+from ruggedpod_api.tasks import update_ssl_certificate
+
 import ruggedpod_api.service_gpio as service
 import ruggedpod_api.service_auth as auth
 
@@ -33,15 +37,17 @@ app = Flask(__name__)
 
 
 @app.errorhandler(auth.AuthenticationFailed)
-def handle_invalid_usage(error):
-    return '', error.status_code
+@app.errorhandler(exception.ParameterMissing)
+@app.errorhandler(exception.BadRequest)
+def error_handler(error):
+    return error.message, error.status_code
 
 
 @app.before_request
 def check_authentication():
     if not auth_enabled:
         return
-    if request.path == '/token' and request.method == 'POST':
+    if (request.path == '/token' and request.method == 'POST') or requests.path == '/GetSSLCertificate':
         return
     token_key = 'X-Auth-Token'
     if token_key in request.cookies:
@@ -184,11 +190,6 @@ def start_blade_serial_session():
     return service.start_blade_serial_session(request.args['bladeId'])
 
 
-@app.errorhandler(exception.ParameterMissing)
-def attribute_missing_handler(error):
-    return error.message, error.status_code
-
-
 @app.route("/SetBladeOilPumpOn")
 def set_blade_oil_pump_on():
     if 'bladeId' not in request.args:
@@ -223,6 +224,43 @@ def get_blade_oil_pump_state():
 @app.route("/GetAllBladesOilPumpStatus")
 def get_all_blades_oil_pump_state():
     return service.get_all_blades_oil_pump_state()
+
+
+@app.route("/GetSSLCertificate")
+def get_ssl_certificate():
+    cert_file = "/etc/ssl/certs/ruggedpod.crt"
+    with open(cert_file, "r") as cert:
+        return cert.read()
+
+
+@app.route("/SetSSLCertificate")
+def set_ssl_certificate():
+    if 'certificate' not in request.args:
+        raise exception.ParameterMissing(name="certificate")
+    if 'private_key' not in request.args:
+        raise exception.ParameterMissing(name="private_key")
+
+    try:
+        certificate = base64.b64decode(request.args['certificate'])
+    except TypeError:
+        raise exception.BadRequest(reason="Certificate should be base64 encoded")
+
+    try:
+        private_key = base64.b64decode(request.args['private_key'])
+    except TypeError:
+        raise exception.BadRequest(reason="Private key should be base64 encoded")
+
+    try:
+        ctx = ssl.Context(ssl.TLSv1_METHOD)
+        ctx.use_certificate(ssl_crypto.load_certificate(ssl_crypto.FILETYPE_PEM, certificate))
+        ctx.use_privatekey(ssl_crypto.load_privatekey(ssl_crypto.FILETYPE_PEM, private_key))
+        ctx.check_privatekey()
+    except ssl_crypto.Error:
+        raise exception.BadRequest(
+            reason="Either certificate or private key is not valid or private key does not match certificate.")
+
+    update_ssl_certificate.task.apply_async((certificate, private_key), countdown=3)
+    return "", 202
 
 
 if __name__ == "__main__":

@@ -36,10 +36,16 @@ oil_pump:
 short_press: 1
 long_press: 6
 
+broker:
+    url: redis://localhost:6379
+
 authentication:
     enabled: true
     secret_key: RASlAp4ILZi3rpqIMPCxrBoitx5QW4if5+naB8s2y30=
     token_lifetime: 3600
+    ssl:
+        certificate_file: /etc/ssl/certs/ruggedpod.crt
+        private_key_file: /etc/ssl/certs/ruggedpod.key
     users:
         admin: admin
         ruggedpod: password
