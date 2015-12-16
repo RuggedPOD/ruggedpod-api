@@ -105,28 +105,29 @@ def set_all_blades_attention_led_off():
 
 
 def get_all_power_consumption():
-    import random
-    random.seed()
     response = etree.Element('GetAllPowerConsumptionResponse')
     for blade_id in consumption_dict:
         consumption = etree.SubElement(response, 'PowerConsumptionResponse')
         blade = etree.SubElement(consumption, 'bladeResponse')
         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
-        value = (adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24
-        etree.SubElement(consumption, 'powerConsumption').text = str(int(value))
+        value = read_power_consumption(blade_id)
+        etree.SubElement(consumption, 'powerConsumption').text = str(value)
     return etree.tostring(response, pretty_print=True)
 
 
 def get_power_consumption(blade_id):
-    import random
     response = etree.Element('PowerConsumptionResponse')
     blade = etree.SubElement(response, 'bladeResponse')
     _set_default_xml_attr(blade)
     etree.SubElement(blade, 'bladeNumber').text = blade_id
-    value = (adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24
-    etree.SubElement(response, 'powerConsumption').text = str(int(value))
+    value = read_power_consumption(blade_id)
+    etree.SubElement(response, 'powerConsumption').text = str(value)
     return etree.tostring(response, pretty_print=True)
+
+
+def read_power_consumption(blade_id):
+    return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
 
 
 def get_all_power_state():
