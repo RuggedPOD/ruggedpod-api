@@ -1,6 +1,6 @@
 # RuggedPOD management API
 #
-# Copyright (C) 2015 Pierre Padrixe <pierre.padrixe@gmail.com>
+# Copyright (C) 2015 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,24 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Import related utilities and helper functions.
-"""
+import mock
+from random import randint
 
-import sys
+GPIO = mock.Mock()
 
-
-def import_module(import_str):
-    """Import a module."""
-    __import__(import_str)
-    return sys.modules[import_str]
+ADCHelpers = mock.Mock()
 
 
-def try_import(import_str, default=None, warn=None):
-    """Try to import a module and if it fails return default."""
-    try:
-        return import_module(import_str)
-    except ImportError:
-        if warn:
-            print warn
-        return default
+class ADCPi(object):
+    def __init__(self, a, b, c, d):
+        pass
+
+    @staticmethod
+    def read_raw(n):
+        return randint(1370, 1430)

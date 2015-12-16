@@ -18,18 +18,10 @@
 
 from lxml import etree
 import time
-import mock
 
 from ruggedpod_api import config
-from ruggedpod_api.common import importutils
+from ruggedpod_api.common import dependency
 
-from ruggedpod_api.services.ADCPi.ABE_ADCPi import ADCPi
-from ruggedpod_api.services.ADCPi.ABE_helpers import ABEHelpers
-
-
-GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
-                              warn="WARNING: RPi.GPIO could not be imported,"
-                              " you are in MOCK MODE!")
 
 attention_led_dict = config.get_attr('attention_led')
 power_dict = config.get_attr('power')
@@ -42,8 +34,11 @@ serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
 dac_power_consumption_addr = config.get_attr('dac_power_consumption_addr')
 
-i2c_helper = ABEHelpers()
-adc = ADCPi(i2c_helper.get_smbus(), 0x6c, 0x6a, 12)
+ADCHelpers = dependency.lookup('adc_helpers')
+ADCPi = dependency.lookup('adc')
+adc = ADCPi(ADCHelpers().get_smbus(), 0x6c, 0x6a, 12)
+
+GPIO = dependency.lookup('gpio')
 
 
 def init():

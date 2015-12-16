@@ -47,3 +47,27 @@ authentication:
     users:
         admin: admin
         ruggedpod: password
+
+dependency_injection:
+    profile: production
+    dependencies:
+        gpio:
+            development:
+                import: ruggedpod_api.mocks
+                from: GPIO
+            production:
+                import: RPi.GPIO
+        adc_helpers:
+            development:
+                import: ruggedpod_api.mocks
+                from: ADCHelpers
+            production:
+                import: ruggedpod_api.services.ADCPi.ABE_helpers
+                from: ABEHelpers
+        adc:
+            development:
+                import: ruggedpod_api.mocks
+                from: ADCPi
+            production:
+                import: ruggedpod_api.services.ADCPi.ABE_ADCPi
+                from: ADCPi
