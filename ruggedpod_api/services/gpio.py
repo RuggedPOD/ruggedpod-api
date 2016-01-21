@@ -18,15 +18,10 @@
 
 from lxml import etree
 import time
-import mock
 
 from ruggedpod_api import config
-from ruggedpod_api.common import importutils
+from ruggedpod_api.common import dependency
 
-
-GPIO = importutils.try_import('RPi.GPIO', default=mock.Mock(),
-                              warn="WARNING: RPi.GPIO could not be imported,"
-                              " you are in MOCK MODE!")
 
 attention_led_dict = config.get_attr('attention_led')
 power_dict = config.get_attr('power')
@@ -37,6 +32,13 @@ short_press = config.get_attr('short_press')
 long_press = config.get_attr('long_press')
 serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
+dac_power_consumption_addr = config.get_attr('dac_power_consumption_addr')
+
+ADCHelpers = dependency.lookup('adc_helpers')
+ADCPi = dependency.lookup('adc')
+adc = ADCPi(ADCHelpers().get_smbus(), 0x6c, 0x6a, 12)
+
+GPIO = dependency.lookup('gpio')
 
 
 def init():
@@ -103,28 +105,29 @@ def set_all_blades_attention_led_off():
 
 
 def get_all_power_consumption():
-    import random
-    random.seed()
     response = etree.Element('GetAllPowerConsumptionResponse')
     for blade_id in consumption_dict:
         consumption = etree.SubElement(response, 'PowerConsumptionResponse')
         blade = etree.SubElement(consumption, 'bladeResponse')
         _set_default_xml_attr(blade)
         etree.SubElement(blade, 'bladeNumber').text = blade_id
-        rand = str(50 + int(time.time()) % 30 + random.randint(-10, 10))
-        etree.SubElement(consumption, 'powerConsumption').text = rand
+        value = read_power_consumption(blade_id)
+        etree.SubElement(consumption, 'powerConsumption').text = str(value)
     return etree.tostring(response, pretty_print=True)
 
 
 def get_power_consumption(blade_id):
-    import random
     response = etree.Element('PowerConsumptionResponse')
     blade = etree.SubElement(response, 'bladeResponse')
     _set_default_xml_attr(blade)
     etree.SubElement(blade, 'bladeNumber').text = blade_id
-    rand = str(100 + random.randint(-10, 10))
-    etree.SubElement(response, 'powerConsumption').text = rand
+    value = read_power_consumption(blade_id)
+    etree.SubElement(response, 'powerConsumption').text = str(value)
     return etree.tostring(response, pretty_print=True)
+
+
+def read_power_consumption(blade_id):
+    return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
 
 
 def get_all_power_state():
