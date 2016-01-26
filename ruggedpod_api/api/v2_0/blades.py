@@ -16,26 +16,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import json
 
+from .blueprint import api
+from .db import Database, Blade, db
+
+from ruggedpod_api.common import exception
 from ruggedpod_api.services import gpio
-from ruggedpod_api.api.v1_0.blueprint import api as api_1_0
-from ruggedpod_api.api.v2_0.blueprint import api as api_2_0
 
-from flask import Flask
-
-app = Flask(__name__)
-
-app.register_blueprint(api_1_0, url_prefix='/v1')
-app.register_blueprint(api_1_0, url_prefix='/v1.0')
-
-app.register_blueprint(api_2_0, url_prefix='/v2')
-app.register_blueprint(api_2_0, url_prefix='/v2.0')
+from flask import request
 
 
-if __name__ == "__main__":
-    gpio.init()
-
-    if '--debug' in sys.argv:
-        app.debug = True
-    app.run(host='0.0.0.0', threaded=True)
+@api.route("/blades", methods=['GET'])
+def get_blades():
+    session = db.session()
+    with session.begin():
+        blades = []
+        for b in session.query(Blade):
+            blades.append({
+                'id': b.id,
+                'name': b.name,
+                'description': b.description
+            })
+        return json.dumps(blades)

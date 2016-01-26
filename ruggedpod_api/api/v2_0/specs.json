@@ -1,0 +1,978 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "2.0.dev",
+        "title": "RuggedPOD API v2.0.dev [DRAFT]",
+        "license": {
+            "name": "GPL v3.0"
+        }
+    },
+    "basePath": "/v2",
+    "tags": [
+        {
+            "name": "/authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "/pod",
+            "description": "Pod management"
+        },
+        {
+            "name": "/blades",
+            "description": "Blades management"
+        },
+        {
+            "name": "/pumps",
+            "description": "Pumps management"
+        },
+        {
+            "name": "/users",
+            "description": "Users management"
+        },
+        {
+            "name": "/profiles",
+            "description": "User profiles management"
+        },
+        {
+            "name": "/account",
+            "description": "Users management"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+
+        "/token": {
+            "post": {
+                "tags": [
+                    "/authentication"
+                ],
+                "summary": "Perform authentication",
+                "description": "Create de token providing username and password. Token can be found in a cookie named X-Auth-Token from the response.",
+                "operationId": "authentication",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Username",
+                        "required": true,
+                        "type": "string",
+                        "default": "admin"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Password",
+                        "required": true,
+                        "type": "string",
+                        "default": "admin"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "A new token has been created"
+                    },
+                    "400": {
+                        "description": "Username or password is missing"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+
+        "/pod": {
+            "get": {
+                "tags": [
+                    "/pod"
+                ],
+                "summary": "Get Pod information",
+                "description": "Get Pod information",
+                "operationId": "pod",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns Pod information",
+                        "schema": {
+                            "$ref": "#/definitions/Pod"
+                        },
+                        "examples": {
+                            "id": "lab-pod-01",
+                            "name": "openstack-01",
+                            "description": "OpenStack testing",
+                            "tags": [
+                                "lab", "test", "cloud"
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "/pod"
+                ],
+                "summary": "Update Pod information",
+                "description": "Update Pod information",
+                "operationId": "updatePod",
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Pod information",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Pod"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pod update succeed",
+                        "schema": {
+                            "$ref": "#/definitions/Pod"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades": {
+            "get": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Get All blades information",
+                "description": "Get All blades information",
+                "operationId": "allBlade",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return all blade objects",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Blade"
+                            }
+                        },
+                        "examples": [
+                            {
+                                "id": "1",
+                                "name": "lab-compute-001",
+                                "description": "OpenStack compute node",
+                                "tags": [
+                                    "cloud", "lab", "compute"
+                                ]
+                            },
+                            {
+                                "id": "2",
+                                "name": "lab-compute-002",
+                                "description": "OpenStack compute node",
+                                "tags": [
+                                    "cloud", "lab", "compute"
+                                ]
+                            }
+                        ]
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades/reset": {
+            "patch": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Reset all blades",
+                "description": "Reset all blades",
+                "operationId": "allBladeReset",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Action succeed on the blade"
+                    },
+                    "409": {
+                        "description": "Conflict because another incompatible operation is still in progress"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades/power": {
+            "patch": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Power On/Off on all blades",
+                "description": "Power On/Off on all blades",
+                "operationId": "bladePower",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "long",
+                        "in": "query",
+                        "description": "Do a long press instead of a short one",
+                        "required": false,
+                        "default": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Action succeed on the blade"
+                    },
+                    "409": {
+                        "description": "Conflict because another incompatible operation is still in progress"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+
+
+
+
+        "/blades/{id}": {
+            "get": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Get blade information",
+                "description": "Get information for the specified blade",
+                "operationId": "blade",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Blade ID in the POD",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the specified blade",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Update blade information",
+                "description": "Update information for the specified blade",
+                "operationId": "updateblade",
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Blade ID in the POD",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the updated blade information",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades/{id}/reset": {
+            "patch": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Reset the specified blade",
+                "description": "Reset the specified blade",
+                "operationId": "bladeReset",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Blade ID in the POD",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Action succeed on the blade"
+                    },
+                    "409": {
+                        "description": "Conflict because another incompatible operation is still in progress"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades/{id}/power": {
+            "patch": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Power On/Off on the specified blade",
+                "description": "Power On/Off on the specified blade",
+                "operationId": "bladePower",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Blade ID in the POD",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "long",
+                        "in": "query",
+                        "description": "Do a long press instead of a short one",
+                        "required": false,
+                        "default": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Action succeed on the blade"
+                    },
+                    "409": {
+                        "description": "Conflict because another incompatible operation is still in progress"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/blades/{id}/serial": {
+            "patch": {
+                "tags": [
+                    "/blades"
+                ],
+                "summary": "Activate the blade serial port",
+                "description": "Activate the blade serial port",
+                "operationId": "bladePower",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Blade ID in the POD",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Action succeed on the blade"
+                    },
+                    "409": {
+                        "description": "Conflict because another incompatible operation is still in progress"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+
+
+
+
+
+
+
+        "/profiles": {
+            "get": {
+                "tags": [
+                    "/profiles"
+                ],
+                "summary": "Get all profiles",
+                "description": "Get all profiles",
+                "operationId": "allProfiles",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all profiles",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Profiles"
+                            }
+                        },
+                        "examples": [
+                            {
+                                "id": "91636c3ec917238a2e33f443a6a32c0e",
+                                "name": "operator",
+                                "authorizations": [
+                                    {
+                                        "method": "GET",
+                                        "pattern": "/.*"
+                                    },
+                                    {
+                                        "method": "PATCH",
+                                        "pattern": "/blades/.*"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "3884a7f7fe1a75cb9bde8e898f760619",
+                                "name": "administrator",
+                                "authorizations": [
+                                    {
+                                        "method": ".*",
+                                        "pattern": "/.*"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "3884a7f7fe1a75cb9bde8e898f760619",
+                                "name": "viewer",
+                                "authorizations": [
+                                    {
+                                        "method": "GET",
+                                        "pattern": "/.*"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        "/users": {
+            "get": {
+                "tags": [
+                    "/users"
+                ],
+                "summary": "Get all users",
+                "description": "Get all users",
+                "operationId": "allUsers",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all users",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        },
+                        "examples": [
+                            {
+                                "id": "26ab0db90d72e28ad0ba1e22ee510510",
+                                "firstname": "John",
+                                "lastname": "Lennon",
+                                "email": "john.lennon@beatles.com",
+                                "profiles": [
+                                    "admin"
+                                ]
+                            },
+                            {
+                                "id": "b026324c6904b2a9cb4b88d6d61c81d1",
+                                "firstname": "Paul",
+                                "lastname": "McCartney",
+                                "email": "paul.mccartney@beatles.com",
+                                "profiles": [
+                                    "admin"
+                                ]
+                            }
+                        ]
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            },
+
+            "post": {
+                "tags": [
+                    "/users"
+                ],
+                "summary": "Create a new user",
+                "description": "Create a new user",
+                "operationId": "putUsers",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Return the created user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        },
+                        "examples": {
+                            "id": "b026324c6904b2a9cb4b88d6d61c81d1",
+                            "firstname": "Paul",
+                            "lastname": "McCartney",
+                            "email": "paul.mccartney@beatles.com",
+                            "profiles": [
+                                "admin"
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+        },
+
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "/users"
+                ],
+                "summary": "Get the specified user",
+                "description": "Get the specified user",
+                "operationId": "users",
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the specified user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            },
+
+            "put": {
+                "tags": [
+                    "/users"
+                ],
+                "summary": "Update the specified user",
+                "description": "Update the specified user",
+                "operationId": "putUsers",
+                "consumes": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "produces": [
+                    "application/json",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the updated user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            },
+
+            "delete": {
+                "tags": [
+                    "/users"
+                ],
+                "summary": "Delete the specified user",
+                "description": "Delete the specified user",
+                "operationId": "deleteUsers",
+                "parameters": [
+                    {
+                        "name": "X-Auth-Token",
+                        "in": "header",
+                        "description": "Authentication token",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User successfully deleted"
+                    },
+                    "401": {
+                        "description": "Authentication is required"
+                    }
+                }
+            }
+
+        }
+
+    },
+
+    "definitions": {
+        "Pod": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Blade": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "Profile": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "authorizations": {
+                    "type": "array",
+                    "items": {
+                        "schema": {
+                            "$ref": "#/definitions/Authorization"
+                        }
+                    }
+                }
+            }
+        },
+        "Authorization": {
+            "type": "object",
+            "required": [
+                "method",
+                "pattern"
+            ],
+            "properties": {
+                "method": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                }
+            }
+        },
+        "User": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
