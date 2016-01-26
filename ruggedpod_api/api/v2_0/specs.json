@@ -92,8 +92,7 @@
                 "description": "Get Pod information",
                 "operationId": "pod",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -132,12 +131,10 @@
                 "description": "Update Pod information",
                 "operationId": "updatePod",
                 "consumes": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -180,8 +177,7 @@
                 "description": "Get All blades information",
                 "operationId": "allBlade",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -236,8 +232,7 @@
                 "description": "Reset all blades",
                 "operationId": "allBladeReset",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -271,8 +266,7 @@
                 "description": "Power On/Off on all blades",
                 "operationId": "bladePower",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -318,8 +312,7 @@
                 "description": "Get information for the specified blade",
                 "operationId": "blade",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -357,12 +350,10 @@
                 "description": "Update information for the specified blade",
                 "operationId": "updateblade",
                 "consumes": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -403,8 +394,7 @@
                 "description": "Reset the specified blade",
                 "operationId": "bladeReset",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -445,8 +435,7 @@
                 "description": "Power On/Off on the specified blade",
                 "operationId": "bladePower",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -495,8 +484,7 @@
                 "description": "Activate the blade serial port",
                 "operationId": "bladePower",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -544,8 +532,7 @@
                 "description": "Get all profiles",
                 "operationId": "allProfiles",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -635,8 +622,7 @@
                 "description": "Get all users",
                 "operationId": "allUsers",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -691,8 +677,7 @@
                 "description": "Create a new user",
                 "operationId": "putUsers",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -744,8 +729,7 @@
                 "description": "Get the specified user",
                 "operationId": "users",
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
@@ -784,12 +768,10 @@
                 "description": "Update the specified user",
                 "operationId": "putUsers",
                 "consumes": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json",
-                    "application/xml"
+                    "application/json"
                 ],
                 "parameters": [
                     {
