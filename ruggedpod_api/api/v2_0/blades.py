@@ -39,3 +39,17 @@ def get_blades():
                 'description': b.description
             })
         return json.dumps(blades)
+
+
+@api.route("/blades/<id>", methods=['GET'])
+def get_blade(id):
+    session = db.session()
+    with session.begin():
+        blade = session.query(Blade).filter(Blade.id==id).first()
+        if blade == None:
+            return "", 404
+        return json.dumps({
+            'id': blade.id,
+            'name': blade.name,
+            'description': blade.description
+        })
