@@ -45,11 +45,35 @@ def get_blades():
 def get_blade(id):
     session = db.session()
     with session.begin():
-        blade = session.query(Blade).filter(Blade.id==id).first()
-        if blade == None:
-            return "", 404
+        blade = _get_blade(id, session)
         return json.dumps({
             'id': blade.id,
             'name': blade.name,
             'description': blade.description
         })
+
+
+@api.route("/blades/<id>", methods=['PUT'])
+def update_blade(id):
+    session = db.session()
+    with session.begin():
+        blade = _get_blade(id, session)
+
+        data = json.loads(request.data)
+        if 'id' in data and int(data['id']) != int(id):
+            raise exception.Conflict(reason="Id mismatch")
+
+        if 'name' in data:
+            blade.name = data['name']
+
+        if 'description' in data:
+            blade.description = data['description']
+
+    return get_blade(id)
+
+
+def _get_blade(id, session):
+    blade = session.query(Blade).filter(Blade.id == id).first()
+    if blade is None:
+        raise exception.NotFound()
+    return blade

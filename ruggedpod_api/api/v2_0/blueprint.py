@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 from flask import Blueprint
 
 from ruggedpod_api.common import exception
@@ -24,6 +26,12 @@ api = Blueprint('v2_0', __name__)
 
 
 @api.errorhandler(auth.AuthenticationFailed)
+@api.errorhandler(exception.NotFound)
+@api.errorhandler(exception.Conflict)
 @api.errorhandler(exception.ParameterMissing)
 def handle_error(error):
-    return '', error.status_code
+    data = {
+        "message": error.message,
+        "code": error.status_code
+    }
+    return json.dumps(data), error.status_code
