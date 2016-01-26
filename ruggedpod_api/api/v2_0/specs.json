@@ -334,7 +334,7 @@
                     "200": {
                         "description": "Return the specified blade",
                         "schema": {
-                            "$ref": "#/definitions/User"
+                            "$ref": "#/definitions/Blade"
                         }
                     },
                     "401": {
@@ -375,7 +375,7 @@
                     "200": {
                         "description": "Return the updated blade information",
                         "schema": {
-                            "$ref": "#/definitions/User"
+                            "$ref": "#/definitions/Blade"
                         }
                     },
                     "401": {
