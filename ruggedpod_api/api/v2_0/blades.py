@@ -36,7 +36,8 @@ def get_blades():
             blades.append({
                 'id': b.id,
                 'name': b.name,
-                'description': b.description
+                'description': b.description,
+                'consumption': gpio.read_power_consumption(str(b.id))
             })
         return json.dumps(blades)
 
@@ -49,7 +50,8 @@ def get_blade(id):
         return json.dumps({
             'id': blade.id,
             'name': blade.name,
-            'description': blade.description
+            'description': blade.description,
+            'consumption': gpio.read_power_consumption(str(blade.id))
         })
 
 
