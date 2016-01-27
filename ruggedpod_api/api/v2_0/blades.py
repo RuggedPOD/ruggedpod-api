@@ -42,6 +42,21 @@ def get_blades():
         return json.dumps(blades)
 
 
+@api.route("/blades/reset", methods=['PATCH'])
+def reset_blades():
+    gpio.set_all_blades_reset()
+    return "", 204
+
+
+@api.route("/blades/power", methods=['PATCH'])
+def power_blades():
+    if _long_action():
+        gpio.set_all_blades_long_onoff()
+    else:
+        gpio.set_all_blades_short_onoff()
+    return "", 204
+
+
 @api.route("/blades/<id>", methods=['GET'])
 def get_blade(id):
     session = db.session()
@@ -74,8 +89,37 @@ def update_blade(id):
     return get_blade(id)
 
 
+@api.route("/blades/<id>/reset", methods=['PATCH'])
+def reset_blade(id):
+    _get_blade(id, db.session())
+    gpio.set_blade_reset(id)
+    return "", 204
+
+
+@api.route("/blades/<id>/power", methods=['PATCH'])
+def power_blade(id):
+    _get_blade(id, db.session())
+    if _long_action():
+        gpio.set_blade_long_onoff(id)
+    else:
+        gpio.set_blade_short_onoff(id)
+    return "", 204
+
+
+@api.route("/blades/<id>/serial", methods=['PATCH'])
+def serial_blade(id):
+    _get_blade(id, db.session())
+    gpio.start_blade_serial_session(id)
+    return "", 204
+
+
 def _get_blade(id, session):
     blade = session.query(Blade).filter(Blade.id == id).first()
     if blade is None:
         raise exception.NotFound()
     return blade
+
+
+def _long_action():
+    long = request.args.get('long')
+    return long is not None and (long.lower() == 'true' or long == '')
