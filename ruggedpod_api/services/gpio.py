@@ -32,11 +32,11 @@ short_press = config.get_attr('short_press')
 long_press = config.get_attr('long_press')
 serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
-dac_power_consumption_addr = config.get_attr('dac_power_consumption_addr')
+i2c = config.get_attr('i2c')
 
 ADCHelpers = dependency.lookup('adc_helpers')
 ADCPi = dependency.lookup('adc')
-adc = ADCPi(ADCHelpers().get_smbus(), 0x6c, 0x6a, 12)
+adc = ADCPi(ADCHelpers().get_smbus(), i2c['dac_power_consumption_addr'], i2c['dac_other_addr'], 12)
 
 GPIO = dependency.lookup('gpio')
 
