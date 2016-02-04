@@ -50,7 +50,7 @@ storage:
     file: /opt/ruggedpod-api/ruggedpod.db
 
 dependency_injection:
-    profile: production
+    profile: development
     dependencies:
         gpio:
             development:
