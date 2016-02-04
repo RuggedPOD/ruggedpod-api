@@ -16,6 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from . import blueprint, blades
-from . import db
+import ruggedpod_api.services.db as service_db
 
-db.db.init()
+service_db.db.init()

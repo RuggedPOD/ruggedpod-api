@@ -3,6 +3,8 @@ from sqlalchemy import Column, Date, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 
+from ruggedpod_api.common.security import hash_password
+
 DBObject = declarative_base()
 
 
@@ -17,14 +19,14 @@ class User(DBObject):
     firstname = Column(String)
     lastname = Column(String)
     login = Column(String)
-    pasword = Column(String)
+    password = Column(String)
     enabled = Column(Boolean)
 
     def __init__(self, login, firstname=None, lastname=None, password=None, enabled=True):
         self.login = login
         self.firstname = firstname
         self.lastname = lastname
-        self.password = paswaord
+        self.password = password
         self.enabled = enabled
 
 
@@ -72,6 +74,11 @@ class Database(object):
                 if i not in blades:
                     blade = Blade(i)
                     session.add(blade)
+
+            if session.query(User).filter(User.login == 'admin').count() == 0:
+                user = User('admin', password=hash_password('admin'))
+
+                session.add(user)
 
 
 db = Database(base=DBObject)

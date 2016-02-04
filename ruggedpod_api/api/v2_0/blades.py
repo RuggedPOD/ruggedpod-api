@@ -19,10 +19,10 @@
 import json
 
 from .blueprint import api
-from .db import Database, Blade, db
 
 from ruggedpod_api.common import exception
 from ruggedpod_api.services import gpio
+from ruggedpod_api.services.db import Database, Blade, db
 
 from flask import request
 
