@@ -46,6 +46,9 @@ authentication:
     secret_key: RASlAp4ILZi3rpqIMPCxrBoitx5QW4if5+naB8s2y30=
     token_lifetime: 3600
 
+storage:
+    file: /opt/ruggedpod-api/ruggedpod.db
+
 dependency_injection:
     profile: production
     dependencies:

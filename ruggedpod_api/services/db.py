@@ -3,7 +3,10 @@ from sqlalchemy import Column, Date, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 
+from ruggedpod_api import config
 from ruggedpod_api.common.security import hash_password
+
+storage = config.get_attr('storage')
 
 DBObject = declarative_base()
 
@@ -56,7 +59,7 @@ class Database(object):
 
     def __init__(self, base):
         self.base = base
-        self.engine = create_engine('sqlite:////opt/ruggedpod-api/ruggedpod.db', echo=True)  # TODO variabilize
+        self.engine = create_engine("sqlite:///%s" % storage['file'], echo=True)  # TODO variabilize
 
     def session(self):
         Session = sessionmaker(bind=self.engine, autocommit=True)
