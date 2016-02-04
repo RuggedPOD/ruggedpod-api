@@ -20,6 +20,7 @@ import json
 
 from .blueprint import api
 
+from ruggedpod_api.api import utils
 from ruggedpod_api.common import exception
 from ruggedpod_api.services import gpio
 from ruggedpod_api.services.db import Database, Blade, db
@@ -76,7 +77,7 @@ def update_blade(id):
     with session.begin():
         blade = _get_blade(id, session)
 
-        data = json.loads(request.data)
+        data = utils.parse_json_body(request)
         if 'id' in data and int(data['id']) != int(id):
             raise exception.Conflict(reason="Id mismatch")
 
