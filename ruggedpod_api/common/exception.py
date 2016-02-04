@@ -68,9 +68,12 @@ class BadRequest(RuggedpodException):
     status_code = 400
 
 
+class BodySyntaxError(BadRequest):
+    msg_fmt = "The request is malformed. Reason: The body syntax is not valid"
+
+
 class ParameterMissing(BadRequest):
-    msg_fmt = "The request is malformed. " \
-              "Reason: the parameter %(name)s is missing."
+    msg_fmt = "The request is malformed. Reason: the parameter %(name)s is missing."
 
 
 class ConfAttributeMissing(RuggedpodException):

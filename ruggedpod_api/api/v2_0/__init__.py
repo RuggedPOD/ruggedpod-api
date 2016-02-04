@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from . import blueprint, blades
+from . import blueprint, authentication, blades
 import ruggedpod_api.services.db as service_db
 
 service_db.db.init()

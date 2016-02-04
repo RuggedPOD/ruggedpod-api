@@ -28,6 +28,7 @@ api = Blueprint('v2_0', __name__)
 @api.errorhandler(auth.AuthenticationFailed)
 @api.errorhandler(exception.NotFound)
 @api.errorhandler(exception.Conflict)
+@api.errorhandler(exception.BodySyntaxError)
 @api.errorhandler(exception.ParameterMissing)
 def handle_error(error):
     data = {
