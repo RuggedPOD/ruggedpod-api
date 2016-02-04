@@ -18,12 +18,12 @@ class User(DBObject):
     id = Column(Integer, primary_key=True)
     firstname = Column(String)
     lastname = Column(String)
-    login = Column(String)
+    username = Column(String)
     password = Column(String)
     enabled = Column(Boolean)
 
-    def __init__(self, login, firstname=None, lastname=None, password=None, enabled=True):
-        self.login = login
+    def __init__(self, username=None, firstname=None, lastname=None, password=None, enabled=True):
+        self.username = username
         self.firstname = firstname
         self.lastname = lastname
         self.password = password
@@ -75,9 +75,8 @@ class Database(object):
                     blade = Blade(i)
                     session.add(blade)
 
-            if session.query(User).filter(User.login == 'admin').count() == 0:
-                user = User('admin', password=hash_password('admin'))
-
+            if session.query(User).filter(User.username == 'admin').count() == 0:
+                user = User(username='admin', password=hash_password('admin'))
                 session.add(user)
 
 

@@ -37,7 +37,7 @@ class AuthenticationFailed(exception.RuggedpodException):
 def get_token(username, password):
 
     try:
-        user = users.find(username)
+        user = users.find(username=username)
     except exception.NotFound:
         raise AuthenticationFailed()
 
@@ -63,7 +63,7 @@ def check(token):
     identity = json.loads(security.Cipher(auth['secret_key']).decrypt(token))
 
     try:
-        user = users.find(identity['username'])
+        user = users.find(username=identity['username'])
     except exception.NotFound:
         raise AuthenticationFailed()
 
