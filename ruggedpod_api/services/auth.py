@@ -18,18 +18,15 @@
 import os
 import json
 import time
-import base64
-import hashlib
 
 from Crypto import Random
-from Crypto.Cipher import AES
 
 from ruggedpod_api import config
-from ruggedpod_api.common import exception
+from ruggedpod_api.common import exception, security
+from ruggedpod_api.services import users
 
 
 auth = config.get_attr('authentication')
-users = auth['users']
 
 
 class AuthenticationFailed(exception.RuggedpodException):
@@ -37,51 +34,14 @@ class AuthenticationFailed(exception.RuggedpodException):
     status_code = 401
 
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args,
-                                                                 **kwargs)
-        return cls._instances[cls]
-
-
-class Cypher(object):
-    __metaclass__ = Singleton
-
-    def __init__(self):
-        self.key = hashlib.sha256(auth['secret_key'].encode()).digest()
-
-    def encrypt(self, raw):
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(self._pad(raw)))
-
-    def decrypt(self, enc):
-        try:
-            dec = base64.b64decode(enc)
-            iv = dec[:AES.block_size]
-            cipher = AES.new(self.key, AES.MODE_CBC, iv)
-            return self._unpad(cipher.decrypt(dec[AES.block_size:])).decode('utf-8')
-        except:
-            raise AuthenticationFailed()
-
-    @staticmethod
-    def _pad(s):
-        length = 16 - len(s) % 16
-        return s + length * chr(length)
-
-    @staticmethod
-    def _unpad(s):
-        return s[:-ord(s[len(s)-1:])]
-
-
 def get_token(username, password):
-    if username not in users:
+
+    try:
+        user = users.find(username=username)
+    except exception.NotFound:
         raise AuthenticationFailed()
 
-    if password != users[username]:
+    if not security.check_password(user.password, password):
         raise AuthenticationFailed()
 
     create_date = int(round(time.time()))
@@ -94,15 +54,17 @@ def get_token(username, password):
         "salt": os.urandom(32).encode('base_64'),
     }
 
-    token = Cypher().encrypt(json.dumps(data))
+    token = security.Cipher(auth['secret_key']).encrypt(json.dumps(data))
 
     return (token, expire_date)
 
 
 def check(token):
-    identity = json.loads(Cypher().decrypt(token))
+    identity = json.loads(security.Cipher(auth['secret_key']).decrypt(token))
 
-    if identity['username'] not in users:
+    try:
+        user = users.find(username=identity['username'])
+    except exception.NotFound:
         raise AuthenticationFailed()
 
     current_date = int(round(time.time()))

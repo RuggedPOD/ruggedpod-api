@@ -53,14 +53,27 @@ class RuggedpodException(Exception):
         return self.message
 
 
+class NotFound(RuggedpodException):
+    msg_fmt = "The requested object does not exist."
+    status_code = 404
+
+
+class Conflict(RuggedpodException):
+    msg_fmt = "Conflict. Reason: %(reason)s"
+    status_code = 409
+
+
 class BadRequest(RuggedpodException):
     msg_fmt = "The request is malformed. Reason: %(reason)s"
     status_code = 400
 
 
+class BodySyntaxError(BadRequest):
+    msg_fmt = "The request is malformed. Reason: The body syntax is not valid"
+
+
 class ParameterMissing(BadRequest):
-    msg_fmt = "The request is malformed. " \
-              "Reason: the parameter %(name)s is missing."
+    msg_fmt = "The request is malformed. Reason: the parameter %(name)s is missing."
 
 
 class ConfAttributeMissing(RuggedpodException):

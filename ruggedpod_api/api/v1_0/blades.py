@@ -19,7 +19,7 @@
 from .blueprint import api
 
 from ruggedpod_api.common import exception
-from ruggedpod_api.services import gpio
+from ruggedpod_api.services import gpio_legacy as gpio
 
 from flask import request
 

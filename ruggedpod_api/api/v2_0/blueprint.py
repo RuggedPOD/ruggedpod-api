@@ -1,6 +1,5 @@
 # RuggedPOD management API
 #
-# Copyright (C) 2015 Maxime Terras <maxime.terras@numergy.com>
 # Copyright (C) 2015 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,26 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import json
 
-from ruggedpod_api.services import gpio
-from ruggedpod_api.api.v1_0.blueprint import api as api_1_0
-from ruggedpod_api.api.v2_0.blueprint import api as api_2_0
+from flask import Blueprint
 
-from flask import Flask
+from ruggedpod_api.common import exception
+from ruggedpod_api.services import auth
 
-app = Flask(__name__)
-
-app.register_blueprint(api_1_0, url_prefix='/v1')
-app.register_blueprint(api_1_0, url_prefix='/v1.0')
-
-app.register_blueprint(api_2_0, url_prefix='/v2')
-app.register_blueprint(api_2_0, url_prefix='/v2.0')
+api = Blueprint('v2_0', __name__)
 
 
-if __name__ == "__main__":
-    gpio.init()
-
-    if '--debug' in sys.argv:
-        app.debug = True
-    app.run(host='0.0.0.0', threaded=True)
+@api.errorhandler(auth.AuthenticationFailed)
+@api.errorhandler(exception.NotFound)
+@api.errorhandler(exception.Conflict)
+@api.errorhandler(exception.BodySyntaxError)
+@api.errorhandler(exception.ParameterMissing)
+def handle_error(error):
+    data = {
+        "message": error.message,
+        "code": error.status_code
+    }
+    return json.dumps(data), error.status_code
