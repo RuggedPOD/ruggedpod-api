@@ -21,7 +21,7 @@ class User(DBObject):
     id = Column(Integer, primary_key=True)
     firstname = Column(String)
     lastname = Column(String)
-    username = Column(String)
+    username = Column(String(20), nullable=False, unique=True)
     password = Column(String)
     enabled = Column(Boolean)
 

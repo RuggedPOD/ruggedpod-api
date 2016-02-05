@@ -42,6 +42,12 @@ def create_user():
     if 'username' not in data:
         raise exception.ParameterMissing(name="username")
 
+    if not data['username'] or not data['username'].strip():
+        raise exception.ParameterMissing(name="username")
+
+    if users.exists(username=data['username']):
+        raise exception.Conflict(reason="User with username '%s' already exists" % data['username'])
+
     if 'firstname' not in data:
         raise exception.ParameterMissing(name="firstname")
 

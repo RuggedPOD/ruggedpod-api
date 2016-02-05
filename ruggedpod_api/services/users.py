@@ -29,6 +29,14 @@ def findOne(filter):
         raise exception.NotFound()
 
 
+def exists(username):
+    try:
+        find(username=username)
+        return True
+    except exception.NotFound:
+        return False
+
+
 def find_all():
     session = db.session()
     with session.begin():
