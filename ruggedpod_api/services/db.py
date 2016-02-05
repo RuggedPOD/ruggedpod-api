@@ -79,7 +79,7 @@ class Database(object):
                     session.add(blade)
 
             if session.query(User).filter(User.username == 'admin').count() == 0:
-                user = User(username='admin', password=hash_password('admin'))
+                user = User(firstname='Administrator', username='admin', password=hash_password('admin'))
                 session.add(user)
 
 
