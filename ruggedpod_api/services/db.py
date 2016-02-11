@@ -44,12 +44,15 @@ class Blade(DBObject):
     name = Column(String)
     description = Column(String)
     enabled = Column(Boolean)
+    mac_address = Column(String)
+    building = Column(Boolean, nullable=False)
 
     def __init__(self, id, name=None, description=None, enabled=True):
         self.id = id
         self.name = name
         self.description = description
         self.enabled = enabled
+        self.building = False
 
 
 class Database(object):
