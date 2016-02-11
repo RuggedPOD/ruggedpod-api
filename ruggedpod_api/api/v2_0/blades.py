@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import shutil
+import os
 
 from .blueprint import api
 
@@ -38,6 +40,8 @@ def get_blades():
                 'id': b.id,
                 'name': b.name,
                 'description': b.description,
+                'building': b.building,
+                'mac_address': _format_mac_address_standard(b.mac_address),
                 'consumption': gpio.read_power_consumption(str(b.id))
             })
         return json.dumps(blades)
@@ -67,6 +71,8 @@ def get_blade(id):
             'id': blade.id,
             'name': blade.name,
             'description': blade.description,
+            'building': blade.building,
+            'mac_address': _format_mac_address_standard(blade.mac_address),
             'consumption': gpio.read_power_consumption(str(blade.id))
         })
 
@@ -86,6 +92,9 @@ def update_blade(id):
 
         if 'description' in data:
             blade.description = data['description']
+
+        if 'mac_address' in data:
+            blade.mac_address = _normalize_mac_address(data['mac_address'])
 
     return get_blade(id)
 
@@ -114,6 +123,39 @@ def serial_blade(id):
     return "", 204
 
 
+@api.route("/blades/<id>/build", methods=['POST'])
+def build_blade(id):
+    session = db.session()
+    with session.begin():
+        blade = _get_blade(id, session)
+        if blade.building:
+            raise exception.Conflict(reason="A building operation is already in progress")
+        if not blade.mac_address:
+            raise exception.Conflict(reason="Blade must have is MAC address set in order to be built")
+
+        dir = "/tftp/pxe/pxelinux.cfg"
+        model = "ubuntu-1404"
+        shutil.copy("%s/%s" % (dir, model), "%s/%s" % (dir, _format_mac_address_pxe(blade.mac_address)))
+        blade.building = True
+
+    return "", 204
+
+
+@api.route("/blades/<id>/build", methods=['DELETE'])
+def cancel_build_blade(id):
+    session = db.session()
+    with session.begin():
+        blade = _get_blade(id, session)
+        if not blade.building:
+            raise exception.Conflict(reason="The server is not in the building state")
+
+        dir = "/tftp/pxe/pxelinux.cfg"
+        os.remove("%s/%s" % (dir, _format_mac_address_pxe(blade.mac_address)))
+        blade.building = False
+
+    return "", 204
+
+
 def _get_blade(id, session):
     blade = session.query(Blade).filter(Blade.id == id).first()
     if blade is None:
@@ -124,3 +166,19 @@ def _get_blade(id, session):
 def _long_action():
     long = request.args.get('long')
     return long is not None and (long.lower() == 'true' or long == '')
+
+
+def _normalize_mac_address(mac):
+    return mac.encode("ascii").translate(None, ":- ").lower()
+
+
+def _format_mac_address_standard(mac):
+    if not mac:
+        return ""
+    n = _normalize_mac_address(mac)
+    return ':'.join(n[i:i+2] for i in range(0, 12, 2))
+
+
+def _format_mac_address_pxe(mac):
+    n = _normalize_mac_address(mac)
+    return "01-%s" % '-'.join(n[i:i+2] for i in range(0, 12, 2))

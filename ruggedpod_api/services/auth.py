@@ -60,6 +60,9 @@ def get_token(username, password):
 
 
 def check(token):
+    if token == auth['token_admin']:
+        return
+
     identity = json.loads(security.Cipher(auth['secret_key']).decrypt(token))
 
     try:
