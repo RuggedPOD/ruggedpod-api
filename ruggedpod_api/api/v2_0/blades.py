@@ -19,6 +19,7 @@
 import json
 import shutil
 import os
+import re
 
 from .blueprint import api
 
@@ -36,12 +37,14 @@ def get_blades():
     with session.begin():
         blades = []
         for b in session.query(Blade):
+            mac_address = _format_mac_address_standard(b.mac_address)
             blades.append({
                 'id': b.id,
                 'name': b.name,
                 'description': b.description,
                 'building': b.building,
-                'mac_address': _format_mac_address_standard(b.mac_address),
+                'mac_address': mac_address,
+                'ip_address': _read_ip_address(mac_address),
                 'consumption': gpio.read_power_consumption(str(b.id))
             })
         return json.dumps(blades)
@@ -67,12 +70,14 @@ def get_blade(id):
     session = db.session()
     with session.begin():
         blade = _get_blade(id, session)
+        mac_address = _format_mac_address_standard(blade.mac_address)
         return json.dumps({
             'id': blade.id,
             'name': blade.name,
             'description': blade.description,
             'building': blade.building,
-            'mac_address': _format_mac_address_standard(blade.mac_address),
+            'mac_address': mac_address,
+            'ip_address': _read_ip_address(mac_address),
             'consumption': gpio.read_power_consumption(str(blade.id))
         })
 
@@ -174,7 +179,7 @@ def _normalize_mac_address(mac):
 
 def _format_mac_address_standard(mac):
     if not mac:
-        return ""
+        return None
     n = _normalize_mac_address(mac)
     return ':'.join(n[i:i+2] for i in range(0, 12, 2))
 
@@ -182,3 +187,20 @@ def _format_mac_address_standard(mac):
 def _format_mac_address_pxe(mac):
     n = _normalize_mac_address(mac)
     return "01-%s" % '-'.join(n[i:i+2] for i in range(0, 12, 2))
+
+
+def _read_ip_address(mac):
+    if not mac:
+        return None
+
+    dhcp_lease_file = "/var/lib/misc/dnsmasq.leases"
+
+    if not os.path.isfile(dhcp_lease_file):
+        return None
+
+    with open(dhcp_lease_file) as f:
+        for line in f.readlines():
+            search = re.search('.* ([0-9a-f:]{17}) ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) .*', line)
+            if search.group(1) == mac:
+                return search.group(2)
+    return None
