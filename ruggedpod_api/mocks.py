@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import mock
-from random import randint
+from random import uniform
 
 GPIO = mock.Mock()
 
@@ -29,4 +29,4 @@ class ADCPi(object):
 
     @staticmethod
     def read_raw(n):
-        return randint(1370, 1430)
+        return round(uniform(0.1, 0.4), 10)

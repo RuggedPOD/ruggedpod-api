@@ -21,6 +21,7 @@ import time
 
 from ruggedpod_api import config
 from ruggedpod_api.common import dependency
+from ruggedpod_api.services.adc import ADC
 
 
 attention_led_dict = config.get_attr('attention_led')
@@ -32,11 +33,6 @@ short_press = config.get_attr('short_press')
 long_press = config.get_attr('long_press')
 serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
-i2c = config.get_attr('i2c')
-
-ADCHelpers = dependency.lookup('adc_helpers')
-ADCPi = dependency.lookup('adc')
-adc = ADCPi(ADCHelpers().get_smbus(), i2c['dac_power_consumption_addr'], i2c['dac_other_addr'], 12)
 
 GPIO = dependency.lookup('gpio')
 
@@ -81,7 +77,7 @@ def set_all_blades_attention_led_off():
 
 
 def read_power_consumption(blade_id):
-    return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
+    return ADC().read(consumption_dict[blade_id])
 
 
 def set_blade_short_onoff(blade_id):
