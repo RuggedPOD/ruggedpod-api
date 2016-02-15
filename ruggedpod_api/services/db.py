@@ -45,6 +45,7 @@ class Blade(DBObject):
     description = Column(String)
     enabled = Column(Boolean)
     mac_address = Column(String)
+    ip_address = Column(String)
     building = Column(Boolean, nullable=False)
 
     def __init__(self, id, name=None, description=None, enabled=True):
