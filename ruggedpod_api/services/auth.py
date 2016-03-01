@@ -74,3 +74,5 @@ def check(token):
 
     if current_date > identity['expire_date']:
         raise AuthenticationFailed()
+
+    return user
