@@ -25,6 +25,7 @@ from ruggedpod_api.services import users
 from ruggedpod_api.services.db import User
 
 from flask import request
+from flask import g as request_context
 
 
 @api.route("/users", methods=['GET'])
@@ -94,6 +95,8 @@ def update_user(id):
 
 @api.route("/users/<id>", methods=['DELETE'])
 def delete_user(id):
+    if str(request_context.user.id) == str(id):
+        return "", 409
     users.delete(id)
     return "", 204
 

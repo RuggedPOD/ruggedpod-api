@@ -25,6 +25,7 @@ from ruggedpod_api.common import exception
 from ruggedpod_api.services import auth
 
 from flask import request, make_response
+from flask import g as request_context
 
 auth_enabled = config.get_attr('authentication')['enabled']
 
@@ -43,7 +44,8 @@ def check_authentication():
             token = request.headers[token_key]
         else:
             raise auth.AuthenticationFailed()
-    auth.check(token)
+    user = auth.check(token)
+    request_context.user = user
 
 
 @api.route("/tokens", methods=['POST'])
