@@ -20,6 +20,9 @@ import json
 import shutil
 import os
 import re
+import socket
+import fcntl
+import struct
 
 from .blueprint import api
 
@@ -29,6 +32,9 @@ from ruggedpod_api.services import gpio
 from ruggedpod_api.services.db import Database, Blade, db
 
 from flask import request
+from jinja2 import Environment, PackageLoader
+
+tpl = Environment(loader=PackageLoader('ruggedpod_api.services', 'pxe'))
 
 
 @api.route("/blades", methods=['GET'])
@@ -128,6 +134,20 @@ def serial_blade(id):
     return "", 204
 
 
+def _write_template(template, dstfile, model):
+    with open(dstfile, "w") as text_file:
+        text_file.write(tpl.get_template(template).render(**model))
+
+
+def _get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+
 @api.route("/blades/<id>/build", methods=['POST'])
 def build_blade(id):
     session = db.session()
@@ -138,9 +158,33 @@ def build_blade(id):
         if not blade.mac_address:
             raise exception.Conflict(reason="Blade must have is MAC address set in order to be built")
 
-        dir = "/tftp/pxe/pxelinux.cfg"
-        model = "ubuntu-1404"
-        shutil.copy("%s/%s" % (dir, model), "%s/%s" % (dir, _format_mac_address_pxe(blade.mac_address)))
+        pxe_tftp_dir = "/tftp/pxe/pxelinux.cfg"
+        pwe_www_dir = "/var/www/pxe"
+        pxe_mac_address = _format_mac_address_pxe(blade.mac_address)
+
+        ip = _get_ip_address('eth0')
+
+        _write_template("ubuntu-1404/pxemenu", "%s/%s" % (pxe_tftp_dir, pxe_mac_address), {
+            'pxe_server': ip,
+            'preseed_filename': "%s.seed" % pxe_mac_address,
+            'serial_baudrate': 115200
+        })
+
+        _write_template("ubuntu-1404/preseed", "%s/%s.seed" % (pwe_www_dir, pxe_mac_address), {
+            'http_proxy': "http://%s:3128" % ip,
+            'ubuntu_mirror': "archive.ubuntu.com",
+            'root_password': "todo",
+            'ntp_server_host': ip,
+            'pxe_server': ip,
+            'post_install_script_name': "%s.sh" % pxe_mac_address,
+        })
+
+        _write_template("ubuntu-1404/post-install.sh", "%s/%s.sh" % (pwe_www_dir, pxe_mac_address), {
+            'blade_number': blade.id,
+            'serial_baudrate': 115200,
+            'api_base_url': "http://%s:5000" % ip
+        })
+
         blade.building = True
 
     return "", 204
@@ -154,8 +198,14 @@ def cancel_build_blade(id):
         if not blade.building:
             raise exception.Conflict(reason="The server is not in the building state")
 
-        dir = "/tftp/pxe/pxelinux.cfg"
-        os.remove("%s/%s" % (dir, _format_mac_address_pxe(blade.mac_address)))
+        pxe_tftp_dir = "/tftp/pxe/pxelinux.cfg"
+        pwe_www_dir = "/var/www/pxe"
+        pxe_mac_address = _format_mac_address_pxe(blade.mac_address)
+
+        os.remove("%s/%s" % (pxe_tftp_dir, pxe_mac_address))
+        os.remove("%s/%s.seed" % (pwe_www_dir, pxe_mac_address))
+        os.remove("%s/%s.sh" % (pwe_www_dir, pxe_mac_address))
+
         blade.building = False
 
     return "", 204

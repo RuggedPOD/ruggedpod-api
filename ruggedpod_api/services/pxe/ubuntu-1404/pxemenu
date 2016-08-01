@@ -1,0 +1,6 @@
+default install
+label install
+        menu label ^Install
+        menu default
+        kernel tftp://{{ pxe_server }}/ubuntu/1404/linux
+        append vga=normal initrd=tftp://{{ pxe_server }}/ubuntu/1404/initrd.gz auto url=http://{{ pxe_server }}:1080/{{ preseed_filename }} netcfg/choose_interface=auto debian-installer/locale=en_US priority=critical console=tty0 console=ttyS0,{{ serial_baudrate }}n8
