@@ -44,11 +44,6 @@ GPIO = dependency.lookup('gpio')
 def init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD)
-    # Set all led in Output
-    for blade_id in attention_led_dict:
-        GPIO.setup(attention_led_dict[blade_id], GPIO.OUT)
-    for blade_id in power_dict:
-        GPIO.setup(power_dict[blade_id], GPIO.OUT)
     for blade_id in reset_dict:
         GPIO.setup(reset_dict[blade_id], GPIO.OUT)
         GPIO.output(reset_dict[blade_id], True)
@@ -58,26 +53,6 @@ def init():
     for blade_id in serial_select_dict:
         GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
         GPIO.output(serial_select_dict[blade_id], False)
-    # Set i2c
-    # command....
-
-
-def set_blade_attention_led_on(blade_id):
-    GPIO.output(attention_led_dict[blade_id], True)
-
-
-def set_all_blades_attention_led_on():
-    for blade_id in attention_led_dict:
-        GPIO.output(attention_led_dict[blade_id], True)
-
-
-def set_blade_attention_led_off(blade_id):
-    GPIO.output(attention_led_dict[blade_id], False)
-
-
-def set_all_blades_attention_led_off():
-    for blade_id in attention_led_dict:
-        GPIO.output(attention_led_dict[blade_id], False)
 
 
 def read_power_consumption(blade_id):
