@@ -1,6 +1,6 @@
 # RuggedPOD management API
 #
-# Copyright (C) 2015 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
+# Copyright (C) 2016 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from . import blueprint, authentication, blades, users, dhcp
-import ruggedpod_api.services.db as service_db
+import json
 
-service_db.db.init()
+from .blueprint import api
+from ruggedpod_api.api import utils
+from ruggedpod_api.services import dhcp
+
+from flask import request
+
+
+@api.route("/dhcp", methods=['GET'])
+def get_dhcp_config():
+    return json.dumps(dhcp.read_config())
+
+
+@api.route("/dhcp", methods=['PUT'])
+def update_dhcp_config():
+    data = utils.parse_json_body(request)
+    dhcp.update_config(data)
+    return get_dhcp_config()
+
+
+@api.route("/dhcp/refresh", methods=['PUT'])
+def refresh_dhcp_config():
+    dhcp.refresh()
+    return "", 204

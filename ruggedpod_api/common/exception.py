@@ -21,7 +21,7 @@ import six
 
 
 class RuggedpodException(Exception):
-    message = "An unknown exception occured"
+    msg_fmt = "An unknown exception occured"
     status_code = 500
 
     def __init__(self, **kwargs):
