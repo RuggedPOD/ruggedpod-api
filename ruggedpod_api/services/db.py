@@ -56,6 +56,24 @@ class Blade(DBObject):
         self.building = False
 
 
+class Config(DBObject):
+    """
+    Describe a generic configuration entry
+    """
+
+    __tablename__ = "config"
+
+    id = Column(Integer, primary_key=True)
+    category = Column(String, nullable=False)
+    key = Column(String, nullable=False, unique=True)
+    value = Column(String)
+
+    def __init__(self, category, key, value):
+        self.category = category
+        self.key = key
+        self.value = value
+
+
 class Database(object):
     """
     The Database object is used to manage database sessions
@@ -85,6 +103,25 @@ class Database(object):
             if session.query(User).filter(User.username == 'admin').count() == 0:
                 user = User(firstname='Administrator', username='admin', password=hash_password('admin'))
                 session.add(user)
+
+            config = {}
+            for c in session.query(Config):
+                config[c.key] = c
+
+            if 'dhcp_proxy' not in config:
+                session.add(Config('dhcp', 'dhcp_proxy', 'true'))
+
+            if 'dhcp_range_start' not in config:
+                session.add(Config('dhcp', 'dhcp_range_start', '192.168.0.1'))
+
+            if 'dhcp_range_end' not in config:
+                session.add(Config('dhcp', 'dhcp_range_end', None))
+
+            if 'dhcp_range_netmask' not in config:
+                session.add(Config('dhcp', 'dhcp_range_netmask', '255.255.255.0'))
+
+            if 'dhcp_lease_duration' not in config:
+                session.add(Config('dhcp', 'dhcp_lease_duration', 'infinite'))
 
 
 db = Database(base=DBObject)
