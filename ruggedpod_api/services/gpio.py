@@ -23,8 +23,6 @@ from ruggedpod_api import config
 from ruggedpod_api.common import dependency
 
 
-attention_led_dict = config.get_attr('attention_led')
-power_dict = config.get_attr('power')
 consumption_dict = config.get_attr('consumption')
 reset_dict = config.get_attr('reset')
 onoff_dict = config.get_attr('onoff')
