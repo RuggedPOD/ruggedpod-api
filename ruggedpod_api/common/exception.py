@@ -59,21 +59,21 @@ class NotFound(RuggedpodException):
 
 
 class Conflict(RuggedpodException):
-    msg_fmt = "Conflict. Reason: %(reason)s"
+    msg_fmt = "%(reason)s"
     status_code = 409
 
 
 class BadRequest(RuggedpodException):
-    msg_fmt = "The request is malformed. Reason: %(reason)s"
+    msg_fmt = "%(reason)s"
     status_code = 400
 
 
 class BodySyntaxError(BadRequest):
-    msg_fmt = "The request is malformed. Reason: The body syntax is not valid"
+    msg_fmt = "The body syntax is not valid"
 
 
 class ParameterMissing(BadRequest):
-    msg_fmt = "The request is malformed. Reason: the parameter %(name)s is missing."
+    msg_fmt = "the parameter %(name)s is missing."
 
 
 class ConfAttributeMissing(RuggedpodException):
