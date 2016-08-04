@@ -1,6 +1,6 @@
 # RuggedPOD management API
 #
-# Copyright (C) 2015 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
+# Copyright (C) 2016 Guillaume Giamarchi <guillaume.giamarchi@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from . import blueprint, authentication, blades, users, dhcp, i2c
-import ruggedpod_api.services.db as service_db
+from ruggedpod_api import config
+from ruggedpod_api.common import dependency
 
-service_db.db.init()
+
+i2c = config.get_attr('i2c')
+ADCHelpers = dependency.lookup('adc_helpers')
+ADCPi = dependency.lookup('adc')
+
+
+def read_power_consumption(blade_id):
+    try:
+        adc = ADCPi(ADCHelpers().get_smbus(i2c['bus']), i2c['dac_power_consumption_addr'], None, 12)
+        return int((adc.read_raw(i2c['consumption'][blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
+    except:
+        return -1

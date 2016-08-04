@@ -23,7 +23,6 @@ from ruggedpod_api import config
 from ruggedpod_api.common import dependency
 
 
-consumption_dict = config.get_attr('consumption')
 reset_dict = config.get_attr('reset')
 onoff_dict = config.get_attr('onoff')
 short_press = config.get_attr('short_press')
@@ -31,10 +30,11 @@ long_press = config.get_attr('long_press')
 serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
 i2c = config.get_attr('i2c')
+consumption_dict = i2c['consumption']
 
 ADCHelpers = dependency.lookup('adc_helpers')
 ADCPi = dependency.lookup('adc')
-adc = ADCPi(ADCHelpers().get_smbus(), i2c['dac_power_consumption_addr'], i2c['dac_other_addr'], 12)
+adc = ADCPi(ADCHelpers().get_smbus(i2c['bus']), i2c['dac_power_consumption_addr'], None, 12)
 
 GPIO = dependency.lookup('gpio')
 

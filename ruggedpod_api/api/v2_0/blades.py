@@ -28,7 +28,7 @@ from .blueprint import api
 
 from ruggedpod_api.api import utils
 from ruggedpod_api.common import exception
-from ruggedpod_api.services import gpio
+from ruggedpod_api.services import gpio, i2c
 from ruggedpod_api.services.db import Database, Blade, db
 
 from flask import request
@@ -51,7 +51,7 @@ def get_blades():
                 'building': b.building,
                 'mac_address': mac_address,
                 'ip_address': _read_ip_address(mac_address),
-                'consumption': gpio.read_power_consumption(str(b.id))
+                'consumption': i2c.read_power_consumption(str(b.id))
             })
         return json.dumps(blades)
 
@@ -84,7 +84,7 @@ def get_blade(id):
             'building': blade.building,
             'mac_address': mac_address,
             'ip_address': _read_ip_address(mac_address),
-            'consumption': gpio.read_power_consumption(str(blade.id))
+            'consumption': i2c.read_power_consumption(str(blade.id))
         })
 
 
