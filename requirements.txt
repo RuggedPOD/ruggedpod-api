@@ -7,3 +7,4 @@ pycrypto==2.6.1
 rpi.gpio==0.5.11
 SQLAlchemy==1.0.11
 Jinja2==2.8
+netaddr==0.7.18

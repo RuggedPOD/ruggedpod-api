@@ -108,17 +108,17 @@ class Database(object):
             for c in session.query(Config):
                 config[c.key] = c
 
-            if 'dhcp_proxy' not in config:
-                session.add(Config('dhcp', 'dhcp_proxy', 'true'))
+            if 'dhcp_mode' not in config:
+                session.add(Config('dhcp', 'dhcp_mode', 'proxy'))
+
+            if 'dhcp_network' not in config:
+                session.add(Config('dhcp', 'dhcp_network', None))
 
             if 'dhcp_range_start' not in config:
-                session.add(Config('dhcp', 'dhcp_range_start', '192.168.0.1'))
+                session.add(Config('dhcp', 'dhcp_range_start', None))
 
             if 'dhcp_range_end' not in config:
                 session.add(Config('dhcp', 'dhcp_range_end', None))
-
-            if 'dhcp_range_netmask' not in config:
-                session.add(Config('dhcp', 'dhcp_range_netmask', '255.255.255.0'))
 
             if 'dhcp_lease_duration' not in config:
                 session.add(Config('dhcp', 'dhcp_lease_duration', 'infinite'))
