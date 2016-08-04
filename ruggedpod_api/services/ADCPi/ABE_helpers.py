@@ -18,13 +18,11 @@ The bus object can then be used by multiple devices without conflicts.
 ================================================
 """
 
-i2c = config.get_attr('i2c')
-
 class ABEHelpers:
 
-    def get_smbus(self):
+    def get_smbus(self, bus):
         try:
-            return smbus.SMBus(i2c['bus'])
+            return smbus.SMBus(bus)
         except IOError:
                 print ("Could not open the i2c bus.")
                 print ("Please check that i2c is enabled and python-smbus and i2c-tools are installed.")

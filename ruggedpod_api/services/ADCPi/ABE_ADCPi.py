@@ -217,7 +217,8 @@ class ADCPi:
             self.__pga = 4
 
         self._bus.write_byte(self.__address, self.__config1)
-        self._bus.write_byte(self.__address2, self.__config2)
+        if self.__address2:
+            self._bus.write_byte(self.__address2, self.__config2)
         return
 
     def set_bit_rate(self, rate):
@@ -259,7 +260,8 @@ class ADCPi:
             self.__lsb = 0.0000078125
 
         self._bus.write_byte(self.__address, self.__config1)
-        self._bus.write_byte(self.__address2, self.__config2)
+        if self.__address2:
+            self._bus.write_byte(self.__address2, self.__config2)
         return
     
     def set_conversion_mode(self, mode):

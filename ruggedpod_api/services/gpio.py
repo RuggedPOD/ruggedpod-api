@@ -23,18 +23,12 @@ from ruggedpod_api import config
 from ruggedpod_api.common import dependency
 
 
-consumption_dict = config.get_attr('consumption')
 reset_dict = config.get_attr('reset')
 onoff_dict = config.get_attr('onoff')
 short_press = config.get_attr('short_press')
 long_press = config.get_attr('long_press')
 serial_select_dict = config.get_attr('serial_select')
 oil_pump_dict = config.get_attr('oil_pump')
-i2c = config.get_attr('i2c')
-
-ADCHelpers = dependency.lookup('adc_helpers')
-ADCPi = dependency.lookup('adc')
-adc = ADCPi(ADCHelpers().get_smbus(), i2c['dac_power_consumption_addr'], i2c['dac_other_addr'], 12)
 
 GPIO = dependency.lookup('gpio')
 
@@ -49,10 +43,6 @@ def init():
     for blade_id in serial_select_dict:
         GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
         GPIO.output(serial_select_dict[blade_id], False)
-
-
-def read_power_consumption(blade_id):
-    return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
 
 
 def set_blade_short_onoff(blade_id):
