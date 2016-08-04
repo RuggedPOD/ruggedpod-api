@@ -21,18 +21,21 @@ short_press: 1
 long_press: 6
 
 i2c:
-    bus: 1
-    dac_power_consumption_addr : 0x6c
+    device_lookup_command: 'ls -1 /dev/i2c-*'
     consumption:
         '1': 1
         '2': 2
         '3': 3
         '4': 4
+    # Only present for legacy API (v1)
+    bus: 1
+    dac_power_consumption_addr : 0x6c
+
 
 authentication:
     enabled: true
     secret_key: RASlAp4ILZi3rpqIMPCxrBoitx5QW4if5+naB8s2y30=
-    token_lifetime: 3600
+    token_lifetime: 604800
     token_admin: Lj9MN6TlSWb6j6EvoZIJJYmUHENs2Oxr
 
 storage:
@@ -61,3 +64,10 @@ dependency_injection:
             production:
                 import: ruggedpod_api.services.ADCPi.ABE_ADCPi
                 from: ADCPi
+        i2c_bus_discovery:
+            development:
+                import: ruggedpod_api.mocks
+                from: I2CBusDiscovery
+            production:
+                import: ruggedpod_api.services.i2c
+                from: I2CBusDiscovery

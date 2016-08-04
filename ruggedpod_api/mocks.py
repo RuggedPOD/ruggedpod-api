@@ -30,3 +30,12 @@ class ADCPi(object):
     @staticmethod
     def read_raw(n):
         return randint(1370, 1430)
+
+
+class I2CBusDiscovery(object):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def list_bus():
+        return "i2c-1\ni2c-2\n"
