@@ -34,6 +34,11 @@ def get_single_bus(id):
     return json.dumps(i2c.read_single_bus(id))
 
 
+@api.route("/i2c/<id>/detect", methods=['PUT'])
+def detect_bus_devices(id):
+    return json.dumps(i2c.detect_bus_devices(id))
+
+
 @api.route("/i2c/<id>/devices", methods=['GET'])
 def get_bus_devices(id):
     return json.dumps(i2c.read_bus_devices(id))

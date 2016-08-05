@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import re
+
 from ruggedpod_api import config
 from ruggedpod_api.common import dependency
 from ruggedpod_api.services import utils
@@ -28,7 +30,14 @@ class I2CBusDiscovery(object):
 
     @staticmethod
     def list_bus():
-        rc, stdout, stderr = utils.cmd(i2c['device_lookup_command'])
+        rc, stdout, stderr = utils.cmd(i2c['bus_lookup_command'])
+        if rc != 0:
+            raise exception.NoContent(reason='Cannot find any I2C bus')
+        return stdout
+
+    @staticmethod
+    def detect(bus):
+        rc, stdout, stderr = utils.cmd('i2cdetect -y %s' % bus)
         if rc != 0:
             raise exception.NoContent(reason='Cannot find any I2C bus')
         return stdout
@@ -92,6 +101,31 @@ def read_single_bus(id):
 
 def read_bus_devices(id):
     return read_single_bus(id)['devices']
+
+
+def detect_bus_devices(id):
+    raw = i2c_discovery.detect(id)
+    detect = []
+    line_count = 0
+
+    for d in raw.split('\n'):
+        if line_count == 0:
+            line_count = line_count + 1
+            continue
+
+        b = d.strip()
+        if b != '':
+            items = map(str.strip, re.findall('.{1,2} ?', b[4:]))
+            while len(items) != 16:
+                items.append('')
+
+            detect.append({
+                'label': '%02d' % ((line_count - 1) * 10),
+                'items': items,
+            })
+            line_count = line_count + 1
+
+    return detect
 
 
 def read_single_device(bus_id, address):
