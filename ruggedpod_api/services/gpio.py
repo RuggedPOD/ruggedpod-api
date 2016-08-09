@@ -38,8 +38,10 @@ def init():
     GPIO.setmode(GPIO.BOARD)
     for blade_id in reset_dict:
         GPIO.setup(reset_dict[blade_id], GPIO.OUT)
+        GPIO.output(reset_dict[blade_id], True)
     for blade_id in onoff_dict:
         GPIO.setup(onoff_dict[blade_id], GPIO.OUT)
+        GPIO.output(onoff_dict[blade_id], False)
     for blade_id in serial_select_dict:
         GPIO.setup(serial_select_dict[blade_id], GPIO.OUT)
         GPIO.output(serial_select_dict[blade_id], False)
