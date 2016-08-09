@@ -58,6 +58,11 @@ class NotFound(RuggedpodException):
     status_code = 404
 
 
+class NoContent(RuggedpodException):
+    msg_fmt = "%(reason)s"
+    status_code = 204
+
+
 class Conflict(RuggedpodException):
     msg_fmt = "%(reason)s"
     status_code = 409

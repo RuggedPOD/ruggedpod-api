@@ -22,16 +22,11 @@ from jinja2 import Environment, PackageLoader
 from netaddr import IPNetwork, IPAddress
 from netaddr.core import AddrFormatError
 
-import ruggedpod_api.common.exception as exception
+from ruggedpod_api.common import exception
+from ruggedpod_api.services import utils
 from ruggedpod_api.services.db import Config, db
 
 tpl = Environment(loader=PackageLoader('ruggedpod_api.services', 'pxe'))
-
-
-def _exec(cmd):
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    process.communicate()
-    return process.wait()
 
 
 def read_config(session=None):
@@ -123,7 +118,7 @@ def refresh():
     with open("/etc/dnsmasq.conf", "w") as text_file:
         text_file.write(tpl.get_template('dnsmasq.conf').render(**config))
 
-    rc = _exec('service dnsmasq restart')
+    rc, stdout, stderr = utils.cmd('service dnsmasq restart')
 
     if (rc != 0):
         raise exception.RuggedpodException()

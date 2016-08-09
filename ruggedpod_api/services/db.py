@@ -123,5 +123,11 @@ class Database(object):
             if 'dhcp_lease_duration' not in config:
                 session.add(Config('dhcp', 'dhcp_lease_duration', 'infinite'))
 
+            if 'i2c_power_read_bus' not in config:
+                session.add(Config('i2c', 'i2c_power_read_bus', '1'))
+
+            if 'i2c_power_read_address' not in config:
+                session.add(Config('i2c', 'i2c_power_read_address', '0x6c'))
+
 
 db = Database(base=DBObject)
