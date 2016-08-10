@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import traceback
 
 from ruggedpod_api import config
 from ruggedpod_api.common import dependency
@@ -61,10 +62,11 @@ def _read_config(session=None):
 def read_power_consumption(blade_id):
     i2cConfig = _read_config()
     try:
-        smbus = ADCHelpers().get_smbus(i2cConfig['i2c_power_read_bus'].value)
-        adc = ADCPi(smbus, i2cConfig['i2c_power_read_address'].value, None, 12)
+        smbus = ADCHelpers().get_smbus(int(i2cConfig['i2c_power_read_bus'].value))
+        adc = ADCPi(smbus, int(i2cConfig['i2c_power_read_address'].value, 16), None, 12)
         return int((adc.read_raw(i2c['consumption'][blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
     except:
+        traceback.print_exc()
         return -1
 
 
