@@ -164,6 +164,39 @@ def build_blade(id):
 
         ip = _get_ip_address('eth0')
 
+        # Default values
+        os = 'ubuntu1404'
+        hostname = 'blade' + str(blade.id)
+        username = 'ruggedpod'
+        ssh_pub_key = ''
+        password = ''
+
+        data = utils.parse_json_body(request)
+
+        if 'os' in data and data['os']:
+            os = data['os']
+
+        if 'username' in data and data['username']:
+            username = data['username']
+
+        if 'hostname' in data and data['hostname']:
+            hostname = data['hostname']
+
+        if 'ssh_pub_key' not in data or not data['ssh_pub_key']:
+            if 'password' not in data:
+                raise exception.BadRequest(
+                        reason="A password or a SSH public key must be provided for user '%s'" % username)
+
+            if not data['password']:
+                raise exception.BadRequest(
+                        reason="A password or a SSH public key must be provided for user '%s'" % username)
+
+            password = data['password']
+        else:
+            ssh_pub_key = data['ssh_pub_key']
+            if 'password' in data and data['password']:
+                password = data['password']
+
         _write_template("ubuntu-1404/pxemenu", "%s/%s" % (pxe_tftp_dir, pxe_mac_address), {
             'pxe_server': ip,
             'preseed_filename': "%s.seed" % pxe_mac_address,
@@ -176,14 +209,25 @@ def build_blade(id):
             'root_password': "todo",
             'ntp_server_host': ip,
             'pxe_server': ip,
-            'post_install_script_name': "%s.sh" % pxe_mac_address,
+            'post_install_script_name': "%s.sh" % pxe_mac_address
         })
 
-        _write_template("ubuntu-1404/post-install.sh", "%s/%s.sh" % (pwe_www_dir, pxe_mac_address), {
+        post_install_model = {
             'blade_number': blade.id,
             'serial_baudrate': 115200,
-            'api_base_url': "http://%s:5000" % ip
-        })
+            'api_base_url': "http://%s:5000" % ip,
+            'username': username,
+            'hostname': hostname
+        }
+
+        if password:
+            post_install_model['password'] = password
+
+        if ssh_pub_key:
+            post_install_model['ssh_pub_key'] = ssh_pub_key
+
+        _write_template("ubuntu-1404/post-install.sh", "%s/%s.sh" % (pwe_www_dir, pxe_mac_address),
+                        post_install_model)
 
         blade.building = True
 

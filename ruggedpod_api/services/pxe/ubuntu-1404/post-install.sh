@@ -1,21 +1,31 @@
 #!/bin/bash
 
-#!/bin/bash
-
 set -eux
 
-### Create the ruggedpod user (sudoers)
+### Create the '{{ username }}' user (sudoers)
 
-adduser --disabled-password --gecos "" --shell /bin/bash ruggedpod
+adduser --disabled-password --gecos "" --shell /bin/bash {{ username }}
+{% if password is defined %}
 chpasswd <<EOF
-ruggedpod:ruggedpod
+{{ username }}:{{ password }}
 EOF
-adduser ruggedpod sudo
+{% endif %}
+adduser {{ username }} sudo
+echo "{{ username }} ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/{{ username }}
 
-echo "ruggedpod ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/ruggedpod
+### Setup hostname '{{ hostname }}'
+echo '{{ hostname }}' > /etc/hostname
+sed -i -e "s/127\.0\.1\.1.*/127.0.1.1 {{ hostname }}/" /etc/hosts
 
+{% if ssh_pub_key is defined %}
+### Add SSH public key for user '{{ username }}'
 
-### Enable startup logs redirect to serial console
+mkdir -p /home/{{ username }}/.ssh
+echo '{{ ssh_pub_key }}' > /home/{{ username }}/.ssh/authorized_keys
+chown -R {{ username }}: /home/{{ username }}/.ssh
+{% endif %}
+
+### Enable startup logs redirection to serial console
 
 chmod +w /boot/grub/grub.cfg
 sed -i -e "s/\(.*\/boot\/vmlinuz\-.*\)/\1 console=tty0 console=ttyS0,{{ serial_baudrate }}n8/g" /boot/grub/grub.cfg
