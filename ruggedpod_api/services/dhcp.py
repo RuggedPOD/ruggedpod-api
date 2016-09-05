@@ -122,3 +122,17 @@ def refresh():
 
     if (rc != 0):
         raise exception.RuggedpodException()
+
+
+def read_ip_address_from_lease(mac):
+    dhcp_lease_file = "/var/lib/misc/dnsmasq.leases"
+
+    if not os.path.isfile(dhcp_lease_file):
+        return None
+
+    with open(dhcp_lease_file) as f:
+        for line in f.readlines():
+            search = re.search('.* ([0-9a-f:]{17}) ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) .*', line)
+            if search.group(1) == mac:
+                return search.group(2)
+    return None

@@ -28,7 +28,7 @@ from .blueprint import api
 
 from ruggedpod_api.api import utils
 from ruggedpod_api.common import exception
-from ruggedpod_api.services import gpio, i2c
+from ruggedpod_api.services import gpio, i2c, dhcp, network
 from ruggedpod_api.services.db import Database, Blade, db
 
 from flask import request
@@ -43,14 +43,14 @@ def get_blades():
     with session.begin():
         blades = []
         for b in session.query(Blade):
-            mac_address = _format_mac_address_standard(b.mac_address)
+            mac_address = network.format_mac_address_standard(b.mac_address)
             blades.append({
                 'id': b.id,
                 'name': b.name,
                 'description': b.description,
                 'building': b.building,
                 'mac_address': mac_address,
-                'ip_address': _read_ip_address(mac_address),
+                'ip_address': network.read_ip_address(mac_address),
                 'consumption': i2c.read_power_consumption(str(b.id))
             })
         return json.dumps(blades)
@@ -76,14 +76,14 @@ def get_blade(id):
     session = db.session()
     with session.begin():
         blade = _get_blade(id, session)
-        mac_address = _format_mac_address_standard(blade.mac_address)
+        mac_address = network.format_mac_address_standard(blade.mac_address)
         return json.dumps({
             'id': blade.id,
             'name': blade.name,
             'description': blade.description,
             'building': blade.building,
             'mac_address': mac_address,
-            'ip_address': _read_ip_address(mac_address),
+            'ip_address': network.read_ip_address(mac_address),
             'consumption': i2c.read_power_consumption(str(blade.id))
         })
 
@@ -105,7 +105,7 @@ def update_blade(id):
             blade.description = data['description']
 
         if 'mac_address' in data:
-            blade.mac_address = _normalize_mac_address(data['mac_address'])
+            blade.mac_address = network.normalize_mac_address(data['mac_address'])
 
     return get_blade(id)
 
@@ -160,7 +160,7 @@ def build_blade(id):
 
         pxe_tftp_dir = "/tftp/pxe/pxelinux.cfg"
         pwe_www_dir = "/var/www/pxe"
-        pxe_mac_address = _format_mac_address_pxe(blade.mac_address)
+        pxe_mac_address = network.format_mac_address_pxe(blade.mac_address)
 
         ip = _get_ip_address('eth0')
 
@@ -244,7 +244,7 @@ def cancel_build_blade(id):
 
         pxe_tftp_dir = "/tftp/pxe/pxelinux.cfg"
         pwe_www_dir = "/var/www/pxe"
-        pxe_mac_address = _format_mac_address_pxe(blade.mac_address)
+        pxe_mac_address = network.format_mac_address_pxe(blade.mac_address)
 
         os.remove("%s/%s" % (pxe_tftp_dir, pxe_mac_address))
         os.remove("%s/%s.seed" % (pwe_www_dir, pxe_mac_address))
@@ -265,36 +265,3 @@ def _get_blade(id, session):
 def _long_action():
     long = request.args.get('long')
     return long is not None and (long.lower() == 'true' or long == '')
-
-
-def _normalize_mac_address(mac):
-    return mac.encode("ascii").translate(None, ":- ").lower()
-
-
-def _format_mac_address_standard(mac):
-    if not mac:
-        return None
-    n = _normalize_mac_address(mac)
-    return ':'.join(n[i:i+2] for i in range(0, 12, 2))
-
-
-def _format_mac_address_pxe(mac):
-    n = _normalize_mac_address(mac)
-    return "01-%s" % '-'.join(n[i:i+2] for i in range(0, 12, 2))
-
-
-def _read_ip_address(mac):
-    if not mac:
-        return None
-
-    dhcp_lease_file = "/var/lib/misc/dnsmasq.leases"
-
-    if not os.path.isfile(dhcp_lease_file):
-        return None
-
-    with open(dhcp_lease_file) as f:
-        for line in f.readlines():
-            search = re.search('.* ([0-9a-f:]{17}) ([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) .*', line)
-            if search.group(1) == mac:
-                return search.group(2)
-    return None
