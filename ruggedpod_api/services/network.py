@@ -20,6 +20,17 @@ import re
 from ruggedpod_api.common import exception
 from ruggedpod_api.services import dhcp, utils
 
+from beaker.cache import CacheManager
+from beaker.util import parse_cache_config_options
+
+cache_opts = {
+    'cache.type': 'file',
+    'cache.data_dir': '/tmp/cache/data',
+    'cache.lock_dir': '/tmp/cache/lock'
+}
+
+cache = CacheManager(**parse_cache_config_options(cache_opts))
+
 
 def normalize_mac_address(mac):
     return mac.encode("ascii").translate(None, ":- ").lower()
@@ -56,6 +67,7 @@ def read_ip_address(mac):
     return _read_ip_address_from_arp_table(mac)
 
 
+@cache.cache('_network_discovery', expire=120)
 def _network_discovery(net_cidr):
     nmap_cmd = "nmap --min-hostgroup 256 --min-parallelism 256 -sn %s" % net_cidr
     rc, stdout, stderr = utils.cmd(nmap_cmd)
