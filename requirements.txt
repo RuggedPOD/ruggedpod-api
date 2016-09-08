@@ -9,3 +9,4 @@ SQLAlchemy==1.0.11
 Jinja2==2.8
 netaddr==0.7.18
 Beaker==1.8.0
+paramiko==2.0.2

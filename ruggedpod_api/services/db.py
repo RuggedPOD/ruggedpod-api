@@ -1,10 +1,15 @@
+import datetime
+import threading
+
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Date, Integer, String, Boolean
+from sqlalchemy import Column, Date, Integer, String, Boolean, Text, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 
 from ruggedpod_api import config
-from ruggedpod_api.common.security import hash_password
+from ruggedpod_api.common import ssh
+from ruggedpod_api.common.security import hash_password, generate_uuid
+
 
 storage = config.get_attr('storage')
 
@@ -54,6 +59,84 @@ class Blade(DBObject):
         self.description = description
         self.enabled = enabled
         self.building = False
+
+
+class ExecCommand(DBObject):
+    """
+    Describe a command to execute on a blade
+    """
+
+    __tablename__ = "commands"
+
+    id = Column(String, primary_key=True)
+    blade_id = Column(String)
+    status = Column(String)
+    submit_date = Column(DateTime)
+    start_date = Column(DateTime)
+    end_date = Column(DateTime)
+    hostname = Column(Integer)
+    command = Column(String)
+    method = Column(String)
+    user = Column(String)
+    ssh_private_key = Column(Text)
+    std_out = Column(Text)
+    std_err = Column(Text)
+    status_code = Column(Integer)
+
+    def __init__(self, blade_id, hostname, command, ssh_private_key, user='root', method='ssh'):
+        self.id = generate_uuid()
+        self.blade_id = blade_id
+        self.status = 'PENDING'
+        self.hostname = hostname
+        self.command = command
+        self.method = method
+        self.user = user
+        self.ssh_private_key = ssh_private_key
+        self.submit_date = datetime.datetime.utcnow()
+
+    def _date_iso(self, date):
+        if date:
+            return date.isoformat()
+        return None
+
+    def submit_date_iso(self):
+        return self._date_iso(self.submit_date)
+
+    def start_date_iso(self):
+        return self._date_iso(self.start_date)
+
+    def end_date_iso(self):
+        return self._date_iso(self.end_date)
+
+    def start(self):
+        self.start_date = datetime.datetime.utcnow()
+        self.status = 'RUNNING'
+
+        cmd_id = self.id
+        command = self.command
+        hostname = self.hostname
+        user = self.user
+        ssh_private_key = self.ssh_private_key
+
+        def exec_command():
+            status = 'SUCCESS'
+            try:
+                (rc, stdout_str, stderr_str) = ssh.execute(command, hostname, user, ssh_private_key)
+            except:
+                status = 'ERROR'
+
+            session = db.session()
+            with session.begin():
+                c = session.query(ExecCommand).filter(ExecCommand.id == cmd_id).first()
+                c.end_date = datetime.datetime.utcnow()
+                c.status = status
+                c.ssh_private_key = None
+                if 'stdout_str' in locals() and stdout_str:
+                    c.std_out = stdout_str
+                if 'stderr_str' in locals() and stderr_str:
+                    c.std_err = stderr_str
+
+        threading.Thread(target=exec_command).start()
 
 
 class Config(DBObject):
