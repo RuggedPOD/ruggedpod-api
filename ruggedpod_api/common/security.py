@@ -8,6 +8,10 @@ from Crypto import Random
 from . import singleton, exception
 
 
+def generate_uuid():
+    return uuid.uuid4().hex
+
+
 def hash_password(password):
     salt = uuid.uuid4().hex
     return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt

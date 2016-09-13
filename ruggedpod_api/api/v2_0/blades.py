@@ -27,9 +27,11 @@ import struct
 from .blueprint import api
 
 from ruggedpod_api.api import utils
-from ruggedpod_api.common import exception
+
+from ruggedpod_api.common import exception, security, ssh
 from ruggedpod_api.services import gpio, i2c, dhcp, network
-from ruggedpod_api.services.db import Database, Blade, db
+
+from ruggedpod_api.services.db import Database, Blade, ExecCommand, db
 
 from flask import request
 from jinja2 import Environment, PackageLoader
@@ -132,6 +134,112 @@ def serial_blade(id):
     _get_blade(id, db.session())
     gpio.start_blade_serial_session(id)
     return "", 204
+
+
+@api.route("/commands", methods=['GET'])
+def get_all_commands():
+    session = db.session()
+    with session.begin():
+        commands = []
+        for c in session.query(ExecCommand):
+            commands.append(_command_to_dict(c, include_result=False))
+        return json.dumps(commands)
+
+
+@api.route("/commands/<id>", methods=['GET'])
+def get_command(id):
+    session = db.session()
+    with session.begin():
+        command = session.query(ExecCommand).filter(ExecCommand.id == id).first()
+        if command is None:
+            raise exception.NotFound()
+        return json.dumps(_command_to_dict(command))
+
+
+@api.route("/blades/<blade_id>/commands/<id>", methods=['GET'])
+def get_blade_command(blade_id, id):
+    session = db.session()
+    with session.begin():
+        command = session.query(ExecCommand).filter(ExecCommand.id == id).first()
+        if command is None or command.blade_id != blade_id:
+            raise exception.NotFound()
+        return json.dumps(_command_to_dict(command))
+
+
+@api.route("/blades/<id>/commands", methods=['GET'])
+def get_blade_commands(id):
+    session = db.session()
+    with session.begin():
+        commands = []
+        for c in session.query(ExecCommand).filter(ExecCommand.blade_id == id):
+            commands.append(_command_to_dict(c, include_result=False))
+        return json.dumps(commands)
+
+
+@api.route("/blades/<id>/commands", methods=['POST'])
+def exec_command(id):
+    data = utils.parse_json_body(request)
+
+    if 'method' not in data:
+        raise exception.BadRequest(reason="Attribute 'method' is missing")
+
+    if data['method'] != 'ssh':
+        raise exception.Conflict(reason="Method '%s' is not supported" % data['method'])
+
+    if 'command' not in data:
+        raise exception.BadRequest(reason="Attribute 'command' is missing")
+
+    if 'username' not in data:
+        raise exception.BadRequest(reason="Attribute 'username' is missing")
+
+    if 'private_key' not in data:
+        raise exception.BadRequest(reason="Attribute 'private_key' is missing")
+
+    username = data['username']
+    command = data['command']
+    private_key = data['private_key']
+
+    session = db.session()
+    with session.begin():
+        blade = _get_blade(id, session)
+        ip = network.read_ip_address(blade.mac_address)
+
+        if not ip:
+            raise exception.Conflict(
+                reason="Did not manage to resolve IP address for blade %s" % id)
+
+        exec_command = ExecCommand(blade.id, ip, command, private_key, username)
+        session.add(exec_command)
+
+        accepted = _command_to_dict(exec_command, include_result=False)
+
+    session = db.session()
+    with session.begin():
+        session.add(exec_command)
+        exec_command.start()
+
+    return json.dumps(accepted), 202
+
+
+def _command_to_dict(c, include_result=True):
+    d = {
+        'id': c.id,
+        'status': c.status,
+        'blade_id': c.blade_id,
+        'submit_date': c.submit_date_iso(),
+        'start_date': c.start_date_iso(),
+        'end_date': c.end_date_iso(),
+        'host': c.hostname,
+        'command': c.command,
+        'method': c.method,
+        'username': c.user,
+    }
+    if include_result:
+        d['result'] = {
+            'stdout': c.std_out,
+            'stderr': c.std_err,
+        }
+    return d
 
 
 def _write_template(template, dstfile, model):
