@@ -34,7 +34,6 @@ consumption_dict = i2c['consumption']
 
 ADCHelpers = dependency.lookup('adc_helpers')
 ADCPi = dependency.lookup('adc')
-adc = ADCPi(ADCHelpers().get_smbus(i2c['bus']), i2c['dac_power_consumption_addr'], None, 12)
 
 GPIO = dependency.lookup('gpio')
 
@@ -80,7 +79,12 @@ def get_power_consumption(blade_id):
 
 
 def read_power_consumption(blade_id):
-    return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
+    try:
+        adc = ADCPi(ADCHelpers().get_smbus(i2c['bus']), i2c['dac_power_consumption_addr'], None, 12)
+        return int((adc.read_raw(consumption_dict[blade_id]) * 2 / float(1000) - 2.5) * 10 * 24)
+    except:
+        traceback.print_exc()
+        return -1
 
 
 def get_all_power_state():
